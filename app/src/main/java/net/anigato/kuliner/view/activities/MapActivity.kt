@@ -32,7 +32,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import im.delight.android.location.SimpleLocation
-import net.anigato.kuliner.databinding.ActivityMainBinding
+import net.anigato.kuliner.databinding.ActivityMapBinding
 import net.anigato.kuliner.databinding.ToolbarBinding
 //import net.anigato.kuliner.databinding.ToolbarBinding
 //import kotlinx.android.synthetic.main.activity_main.*
@@ -40,8 +40,8 @@ import net.anigato.kuliner.databinding.ToolbarBinding
 import java.io.IOException
 import java.util.*
 
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
-    private lateinit var binding: ActivityMainBinding
+class MapActivity : AppCompatActivity(), OnMapReadyCallback {
+    private lateinit var binding: ActivityMapBinding
     private lateinit var toolbarBinding: ToolbarBinding
 
     var permissionArrays = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbarBinding = ToolbarBinding.bind(toolbar)

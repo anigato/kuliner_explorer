@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="net.anigato.kuliner">
 
-<!--    agar mendapatkan permission internet dan lokasi-->
+    <!--    agar mendapatkan permission internet dan lokasi-->
     <uses-permission android:name="android.permission.INTERNET" />
-<!--    dari library simple location-->
+    <!--    dari library simple location-->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -19,18 +19,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
-        <activity android:name=".view.activities.RuteActivity" />
-
         <activity
             android:name=".view.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".view.activities.MapActivity" />
+        <activity android:name=".view.activities.RuteActivity" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDlEg-GyBBQmy4BmzgrFSk0n-OOI0RpZZA" />
