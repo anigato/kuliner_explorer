@@ -1,0 +1,18 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+//        tambahkan baris dibawah untuk bisa pakai simple location
+        maven { url "https://jitpack.io" }
+    }
+}
+rootProject.name = "Kuliner"
+include ':app'
