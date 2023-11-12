@@ -1,16 +1,19 @@
 package net.anigato.kuliner.view.adapter
 
 import android.app.Activity
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import net.anigato.kuliner.data.model.food.ModelFoods
-import net.anigato.kuliner.view.foodInterface.FoodILoadMore
+import net.anigato.kuliner.view.foodInterface.ILoadMoreFood
 import net.anigato.kuliner.view.viewHolder.FoodLoadViewHolder
 import net.anigato.kuliner.view.viewHolder.FoodsViewHolder
 import net.anigato.kuliner.databinding.ListItemFoodsBinding
 import net.anigato.kuliner.databinding.ListItemFoodsLoaderBinding
+import net.anigato.kuliner.view.activities.DetailsFoodActivity
 
 class FoodAdapter(
     recyclerView: RecyclerView,
@@ -21,7 +24,7 @@ class FoodAdapter(
     private val VIEW_TYPE_ITEM = 0
     private val VIEW_TYPE_LOADING = 1
     private val visibleThreshold = 5
-    private var loadMore: FoodILoadMore? = null
+    private var loadMore: ILoadMoreFood? = null
     private var isLoading = false
     private var lastVisibleItem = 0
     private var totalItemCount = 0
@@ -69,7 +72,7 @@ class FoodAdapter(
         }
     }
 
-    fun getLoadMore(iLoaded: FoodILoadMore) {
+    fun getLoadMore(iLoaded: ILoadMoreFood) {
         this.loadMore = iLoaded
     }
 
@@ -82,6 +85,21 @@ class FoodAdapter(
             holder.bindView(modelFoods[position]!!)
         } else if (holder is FoodLoadViewHolder) {
             holder.bindView()
+        }
+
+
+
+        val foodsItem:ModelFoods? = modelFoods[position]
+
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(activity, DetailsFoodActivity::class.java)
+            intent.putExtra("IMAGE", foodsItem!!.image)
+            intent.putExtra("TITLE", foodsItem!!.title)
+            intent.putExtra("DETAIL", foodsItem!!.details)
+            intent.putExtra("ITERASI", foodsItem!!.iterasi)
+//            Log.d("cek detail adapter",foodsItem!!.iterasi.toString())
+            activity.startActivity(intent)
         }
     }
 

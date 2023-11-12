@@ -1,5 +1,5 @@
 package net.anigato.kuliner.view.foodInterface
 
-interface FoodILoadMore {
+interface ILoadMoreFood {
     fun onLoadMore()
 }

@@ -1,10 +1,10 @@
-package net.anigato.kuliner.view
+package net.anigato.kuliner.view.activities.load
 
 import android.os.AsyncTask
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import net.anigato.kuliner.data.model.food.ModelFoods
-import net.anigato.kuliner.view.foodInterface.FoodIJsoupData
+import net.anigato.kuliner.view.foodInterface.IJsoupDataFood
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -12,11 +12,23 @@ import java.io.IOException
 
 class LoadFoods(var activity: AppCompatActivity?): AsyncTask<Void, Void, ArrayList<ModelFoods>>(){
     private var modelFoods: ArrayList<ModelFoods> = ArrayList()
-    private var loadedData = activity as FoodIJsoupData
-
+    private var loadedData = activity as IJsoupDataFood
+    var strCity: String = "Kota Bandung"
     override fun doInBackground(vararg params: Void?): ArrayList<ModelFoods> {
         try {
-            val url = "https://www.idntimes.com/food/dining-guide/naufal-al-rahman-1/makanan-khas-bandung-yang-paling-populer?page=all"
+            var url: String = ""
+
+            if (strCity.equals("Kota Bandung")) {
+                url = "https://www.idntimes.com/food/dining-guide/naufal-al-rahman-1/makanan-khas-bandung-yang-paling-populer?page=all"
+
+            } else if (strCity.equals("Kabupaten Cilacap")) {
+                // Ubah URL jika city adalah Kabupaten Cilacap
+                url = "https://www.idntimes.com/food/dining-guide/naufal-al-rahman-1/makanan-khas-cilacap-paling-sedap?page=all"
+
+            }
+
+
+
             val doc: Document = Jsoup.connect(url).get()
 
             val div: Elements = doc.select("div.split-page")
@@ -29,15 +41,18 @@ class LoadFoods(var activity: AppCompatActivity?): AsyncTask<Void, Void, ArrayLi
                 val title: String = div.select("h2").eq(index).text()
 //                    ambil detail dari p
                 val details: String = div.select("p").eq(index).text()
-
-                Log.d("ress","$imgUrl, $title, $details")
 //                    modelFoods.add(ModelFoods("https://www.orami.co.id"+imgUrl, title, details))
-                modelFoods.add(ModelFoods(imgUrl, title, details))
+                modelFoods.add(ModelFoods(imgUrl, title, details, index.toString()))
+//                Log.d("cek load food", "$imgUrl, $title, $details, $index")
             }
+
+
         }catch (e: IOException){
             e.printStackTrace()
         }
+
         return modelFoods
+
     }
 
     override fun onPostExecute(result: ArrayList<ModelFoods>?) {

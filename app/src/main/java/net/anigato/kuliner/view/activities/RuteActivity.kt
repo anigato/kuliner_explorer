@@ -185,7 +185,7 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
 
                 //intent to share location
                 binding.llShare.setOnClickListener {
-                    val strUri = "http://maps.google.com/maps?saddr=$strLatitude,$strLongitude"
+                    val strUri = "http://maps.google.com/maps?daddr=$strLatitude,$strLongitude"
                     val intent = Intent(Intent.ACTION_SEND)
                     intent.type = "text/plain"
                     intent.putExtra(Intent.EXTRA_SUBJECT, strNamaLokasi)

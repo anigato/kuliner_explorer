@@ -147,7 +147,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         try {
             val addressList = geocoder.getFromLocation(strCurrentLatitude, strCurrentLongitude, 1)
             if (addressList != null && addressList.size > 0) {
-                val strCity = addressList[0].locality
+                val strCity = addressList[0].subAdminArea
                 toolbarBinding.tvCity.text = strCity
             }
         } catch (e: IOException) {

@@ -5,10 +5,10 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import net.anigato.kuliner.data.model.food.ModelFoods
-import net.anigato.kuliner.view.foodInterface.FoodIJsoupData
-import net.anigato.kuliner.view.LoadFoods
+import net.anigato.kuliner.view.foodInterface.IJsoupDataFood
+import net.anigato.kuliner.view.activities.load.LoadFoods
 
-class SplashActivity : AppCompatActivity(), FoodIJsoupData {
+class SplashActivity : AppCompatActivity(), IJsoupDataFood {
     private var loader: AsyncTask<Void, Void, ArrayList<ModelFoods>>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
