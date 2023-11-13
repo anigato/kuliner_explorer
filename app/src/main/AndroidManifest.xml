@@ -14,18 +14,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity android:name=".view.activities.DetailsFoodActivity" />
+        <activity android:name=".view.activities.SplashActivity" android:theme="@style/Splash"/>
+        <activity android:name=".view.activities.MainActivity" />
+        <activity android:name=".view.activities.MapActivity" />
         <activity
-            android:name=".view.activities.SplashActivity"
-            android:exported="true"
-            android:theme="@style/Splash">
+            android:name=".view.activities.MapInitiationActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.activities.MainActivity" />
-        <activity android:name=".view.activities.MapActivity" />
         <activity android:name=".view.activities.RuteActivity" />
 
         <meta-data

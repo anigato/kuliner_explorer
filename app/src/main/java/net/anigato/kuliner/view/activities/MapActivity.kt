@@ -34,9 +34,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import im.delight.android.location.SimpleLocation
 import net.anigato.kuliner.databinding.ActivityMapBinding
 import net.anigato.kuliner.databinding.ToolbarBinding
-//import net.anigato.kuliner.databinding.ToolbarBinding
-//import kotlinx.android.synthetic.main.activity_main.*
-//import kotlinx.android.synthetic.main.toolbar.*
 import java.io.IOException
 import java.util.*
 
@@ -144,22 +141,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mapsView = googleMap
 
-        val titleString = title
-
-// Membagi string menjadi array menggunakan spasi sebagai pemisah
-        val titleParts = titleString.toString().split(" ")
-
-// Mengambil elemen kedua dari array yang merupakan "Cimol"
-        if (titleParts.size > 1) {
-            val title = titleParts.subList(1, titleParts.size).joinToString(" ")
-            toolbarBinding.tvFoodName.text = "Resto " + title + " disekitarmu"
-        }
-
-//        if (titleParts.size > 1) {
-//            val title = titleParts[1]
-//            toolbarBinding.tvFoodName.text = title
-//        }
-
+        toolbarBinding.tvFoodName.text = title + " disekitarmu"
 
         //set text location
         val geocoder = Geocoder(this, Locale.getDefault())
@@ -183,18 +165,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mainViewModel.setMarkerLocation(strCurrentLocation)
         progressDialog.show()
 
-//        mainViewModel.getMarkerLocation().observe(this, { modelResults: ArrayList<ModelResults?> ->
-//            val nonNullModelResults = modelResults.filterNotNullTo(ArrayList())
-//            if (nonNullModelResults.size != 0) {
-//                mainAdapter.setLocationAdapter(nonNullModelResults)
-//                //get multiple marker
-//                getMarker(nonNullModelResults)
-//                progressDialog.dismiss()
-//            } else {
-//                Toast.makeText(this, "Oops, tidak bisa mendapatkan lokasi kamu!", Toast.LENGTH_SHORT).show()
-//            }
-//        })
-
         mainViewModel.getMarkerLocation().observe(this, { modelResults: ArrayList<ModelResults> ->
             if (modelResults.size != 0) {
                 mainAdapter.setLocationAdapter(modelResults)
@@ -208,16 +178,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun getMarker(modelResultsArrayList: ArrayList<ModelResults>) {
-//        val geocoder = Geocoder(this, Locale.getDefault())
-//        val addresses = geocoder.getFromLocation(strCurrentLatitude, strCurrentLongitude, 1)
-//        val address = addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-//        val city = addresses[0].locality
-//        val state = addresses[0].adminArea
-//        val country = addresses[0].countryName
-//        val postalCode = addresses[0].postalCode
-//        val knownName = addresses[0].featureName // Only if available else return NULL
-//
-//        Log.d("Location Info", "$address, $city, $state, $country, $postalCode, $knownName")
         val currentLatLng = LatLng(strCurrentLatitude, strCurrentLongitude)
         mapsView.addMarker(MarkerOptions()
             .position(currentLatLng)
@@ -228,17 +188,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             //set LatLong from API
             val latLngMarker = LatLng(modelResultsArrayList[i].modelGeometry.modelLocation.lat,
                 modelResultsArrayList[i].modelGeometry.modelLocation.lng)
-
-
-//            val modelGeometry = modelResultsArrayList[i].modelGeometry
-//            val name = modelResultsArrayList[i].name
-//            val vicinity = modelResultsArrayList[i].vicinity
-//            val placeId = modelResultsArrayList[i].placeId
-//            val rating = modelResultsArrayList[i].rating
-//            val lat = modelResultsArrayList[i].modelGeometry.modelLocation.lat
-//            val lng = modelResultsArrayList[i].modelGeometry.modelLocation.lng
-//            Log.d("Location Info", "$modelGeometry, $name, $vicinity, $placeId, $rating, $lat, $lng")
-
 
 //        click marker for change position recyclerview
 
@@ -264,24 +213,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         mapsView.setOnMarkerClickListener { marker ->
-//            val markerPosition = marker.position
-//            mapsView.addMarker(MarkerOptions()
-//                .position(markerPosition)
-//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-//            var markerSelected = -1
-//            for (i in modelResultsArrayList.indices) {
-//                if (markerPosition.latitude == modelResultsArrayList[i].modelGeometry.modelLocation.lat && markerPosition.longitude == modelResultsArrayList[i].modelGeometry.modelLocation.lng) {
-//                    markerSelected = i
-//                }
-//            }
-//            val cameraPosition = CameraPosition.Builder().target(markerPosition).zoom(14f).build()
-//            mapsView.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-//
-//            mainAdapter.notifyDataSetChanged()
-//            binding.rvListLocation.smoothScrollToPosition(markerSelected)
-//            marker.showInfoWindow()
-//            false
-
             // Periksa title marker
             if (marker.title != "Current Location") {
                 val markerPosition = marker.position
@@ -302,9 +233,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             // Kembalikan true untuk mengizinkan tindakan klik pada marker selain "Current Location"
             marker.title != "Current Location"
         }
-
-//        val currentLatLng = LatLng(strCurrentLatitude, strCurrentLongitude)
-//        mapsView.addMarker(MarkerOptions().position(currentLatLng).title("Current Location"))
     }
 
     companion object {

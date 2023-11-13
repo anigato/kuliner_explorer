@@ -10,12 +10,14 @@ import net.anigato.kuliner.view.activities.load.LoadFoods
 
 class SplashActivity : AppCompatActivity(), IJsoupDataFood {
     private var loader: AsyncTask<Void, Void, ArrayList<ModelFoods>>? = null
+    private var strCity: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
 //        loader = LoadInitFoods(this)
-        loader = LoadFoods(this)
+        strCity = intent.getStringExtra("strCity")
+        loader = LoadFoods(this, strCity)
         loader!!.execute()
     }
 
@@ -52,6 +54,7 @@ class SplashActivity : AppCompatActivity(), IJsoupDataFood {
     override fun getWebData(datas: ArrayList<ModelFoods>) {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("FOODS", datas)
+        intent.putExtra("strCity", strCity)
         startActivity(intent)
         finish()
 

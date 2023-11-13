@@ -15,7 +15,7 @@ class DetailsFoodActivity : AppCompatActivity(), ILoadDetailFood {
     private lateinit var binding: ActivityDetailsFoodBinding
     private var urlImage: String? = null
     private var urlDetail: String? = null
-    private var title: String? = null
+    private var strCity: String? = null
     private var urlIterasi: String? = null
     private var loadDetailFoods: AsyncTask<Void, Void, ArrayList<String>>? = null
 
@@ -27,13 +27,15 @@ class DetailsFoodActivity : AppCompatActivity(), ILoadDetailFood {
         urlImage = intent.getStringExtra("IMAGE")
         urlDetail = intent.getStringExtra("DETAIL")
         urlIterasi = intent.getStringExtra("ITERASI")
+        strCity = intent.getStringExtra("strCity")
 
 
         Log.d("cek detailfood","$urlIterasi")
+        Log.d("cek detaildetail","$urlDetail")
 
         binding.txtTitleDetail.text = intent.getStringExtra("TITLE")
         Picasso.get().load(urlImage).into(binding.imageDetail)
-        loadDetailFoods = LoadDetailFoods(this, urlIterasi!!)
+        loadDetailFoods = LoadDetailFoods(this, urlDetail)
         loadDetailFoods!!.execute()
 
         setupListeners()

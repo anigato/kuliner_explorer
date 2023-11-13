@@ -14,11 +14,13 @@ import net.anigato.kuliner.view.viewHolder.FoodsViewHolder
 import net.anigato.kuliner.databinding.ListItemFoodsBinding
 import net.anigato.kuliner.databinding.ListItemFoodsLoaderBinding
 import net.anigato.kuliner.view.activities.DetailsFoodActivity
+import net.anigato.kuliner.view.activities.MainActivity
 
 class FoodAdapter(
     recyclerView: RecyclerView,
     var activity: Activity,
-    var modelFoods: MutableList<ModelFoods?>
+    var modelFoods: MutableList<ModelFoods?>,
+    var strCity: String?
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val VIEW_TYPE_ITEM = 0
@@ -96,8 +98,9 @@ class FoodAdapter(
             val intent = Intent(activity, DetailsFoodActivity::class.java)
             intent.putExtra("IMAGE", foodsItem!!.image)
             intent.putExtra("TITLE", foodsItem!!.title)
-            intent.putExtra("DETAIL", foodsItem!!.details)
             intent.putExtra("ITERASI", foodsItem!!.iterasi)
+            intent.putExtra("DETAIL", foodsItem!!.detail)
+            intent.putExtra("strCity", strCity)
 //            Log.d("cek detail adapter",foodsItem!!.iterasi.toString())
             activity.startActivity(intent)
         }

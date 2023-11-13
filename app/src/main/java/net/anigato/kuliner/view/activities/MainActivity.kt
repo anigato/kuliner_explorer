@@ -1,39 +1,5 @@
 package net.anigato.kuliner.view.activities
 
-//import android.content.Intent
-//import android.graphics.ColorSpace.Model
-//import android.os.Bundle
-//import android.os.PersistableBundle
-//import androidx.appcompat.app.AppCompatActivity
-//import androidx.recyclerview.widget.LinearLayoutManager
-//import net.anigato.kuliner.data.model.food.ModelFoods
-//import net.anigato.kuliner.databinding.ActivityMainBinding
-//import net.anigato.kuliner.view.adapter.FoodAdapter
-//
-//class MainActivity : AppCompatActivity() {
-
-//    private lateinit var binding: ActivityMainBinding
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        binding = ActivityMainBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//
-//        setupListeners()
-//    }
-//
-//    private fun setupListeners() {
-//        binding.btnGoToMap.setOnClickListener {
-//            val intent = Intent(this, MapActivity::class.java)
-//            startActivity(intent)
-//        }
-//
-//        // Add other listeners for different features of your app
-//    }
-
-
-
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,6 +13,7 @@ class MainActivity : AppCompatActivity() {
     private var modelFoods: ArrayList<ModelFoods>? = null
     private var foodsLoad: MutableList<ModelFoods?> = ArrayList()
     private lateinit var foodAdapter: FoodAdapter
+    private var strCity: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,15 +25,17 @@ class MainActivity : AppCompatActivity() {
             getTenFoods(modelFoods!!)
         }
 
+        strCity = intent.getStringExtra("strCity")
+
         binding.recyclerview.layoutManager = LinearLayoutManager(this)
-        foodAdapter = FoodAdapter(binding.recyclerview, this, foodsLoad)
+        foodAdapter = FoodAdapter(binding.recyclerview, this, foodsLoad, strCity)
         binding.recyclerview.adapter = foodAdapter
 
 
     }
 
     private fun getTenFoods(listFoods: ArrayList<ModelFoods>) {
-        for (index: Int in 0 until minOf(10, listFoods.size)) {
+        for (index: Int in 0 until minOf(20, listFoods.size)) {
             foodsLoad.add(listFoods[index])
         }
     }
