@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         foodAdapter = FoodAdapter(binding.recyclerview, this, foodsLoad)
         binding.recyclerview.adapter = foodAdapter
 
-        setupListeners()
+
     }
 
     private fun getTenFoods(listFoods: ArrayList<ModelFoods>) {
@@ -71,11 +71,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupListeners() {
-        binding.btnGoToMap.setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            startActivity(intent)
-        }
-    }
+
 }
 

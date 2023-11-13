@@ -71,7 +71,7 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainViewH
 
         //intent to share location
         holder.imageShare.setOnClickListener {
-            val strUri = "http://maps.google.com/maps?saddr=$strLat,$strLong"
+            val strUri = "http://maps.google.com/maps?daddr=$strLat,$strLong"
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "text/plain"
             intent.putExtra(Intent.EXTRA_SUBJECT, strNamaLokasi)

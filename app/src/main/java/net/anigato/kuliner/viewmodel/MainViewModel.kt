@@ -20,13 +20,16 @@ class MainViewModel : ViewModel() {
     private val modelResultsMutableLiveData = MutableLiveData<ArrayList<ModelResults>>()
     private val modelDetailMutableLiveData = MutableLiveData<ModelDetail>()
 
+
     companion object {
         var strApiKey = "AIzaSyDlEg-GyBBQmy4BmzgrFSk0n-OOI0RpZZA"
+        var title: String? = null
     }
 
     fun setMarkerLocation(strLocation: String) {
         val apiService = ApiClient.getClient()
-        val call = apiService.getDataResult(strApiKey, "takoyaki", strLocation, "distance")
+//        val call = apiService.getDataResult(strApiKey, "takoyaki", strLocation, "distance")
+        val call = apiService.getDataResult(strApiKey, title.toString(), strLocation, "distance")
         call.enqueue(object : Callback<ModelResultNearby> {
             override fun onResponse(call: Call<ModelResultNearby>, response: Response<ModelResultNearby>) {
                 val body = response.body()

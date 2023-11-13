@@ -7,11 +7,7 @@
     tools:context=".view.activities.MainActivity"
     android:background="@color/colorPrimaryDark">
 
-    <Button
-        android:id="@+id/btnGoToMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go to Map"/>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"

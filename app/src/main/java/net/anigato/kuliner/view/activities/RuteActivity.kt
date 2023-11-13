@@ -144,6 +144,7 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
 
                 if (strRating == "0.0") {
                     binding.tvRating.setText("Tempat belum memiliki rating!")
+                    binding.tvRating.setTextColor(Color.RED)
                 } else {
                     binding.tvRating.setText(strRating)
                 }
@@ -163,7 +164,7 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
                     binding.imageTime.setBackgroundResource(R.drawable.ic_time)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    binding.tvJamOperasional.text = "Rumah Makan Tutup Sementara"
+                    binding.tvJamOperasional.text = "Resto Tutup Sementara atau belum mengatur jam operasional"
                     binding.tvJamOperasional.setTextColor(Color.RED)
                     binding.tvJamBuka.visibility = View.GONE
                     binding.imageTime.setBackgroundResource(R.drawable.ic_block)
@@ -220,24 +221,24 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
     override fun onDirectionSuccess(direction: Direction) {
         if (direction.isOK) {
             //show distance & duration
-            Log.d("cek direction","$direction")
+//            Log.d("cek direction","$direction")
             val route = direction.routeList[0]
-            Log.d("cek rutee","$route")
+//            Log.d("cek rutee","$route")
             val leg = route.legList[0]
-            Log.d("cek leg","$leg")
+//            Log.d("cek leg","$leg")
 
             val distanceInfo = leg.distance
-                Log.d("cek disance","$distanceInfo")
-                val jarak = distanceInfo.value
-                Log.d("cek distance val","$jarak")
+//                Log.d("cek disance","$distanceInfo")
+//                val jarak = distanceInfo.value
+//                Log.d("cek distance val","$jarak")
             val durationInfo = leg.duration
-                Log.d("cek duration","$durationInfo")
-                val lama = durationInfo.value
-                Log.d("cek duration val","$lama")
+//                Log.d("cek duration","$durationInfo")
+//                val lama = durationInfo.value
+//                Log.d("cek duration val","$lama")
             val strDistance = distanceInfo.text
-                Log.d("cek strDistance","$strDistance")
+//                Log.d("cek strDistance","$strDistance")
             val strDuration = durationInfo.text.replace("mins", "mnt")
-                Log.d("cek strDuration","$strDuration")
+//                Log.d("cek strDuration","$strDuration")
 
 //            val strDuration = durationInfo.text.replace("mins", "mnt")
             binding.tvDistance.text = "Jarak lokasi tujuan dari lokasi kamu sekarang $strDistance dan waktu tempuh sekitar $strDuration"

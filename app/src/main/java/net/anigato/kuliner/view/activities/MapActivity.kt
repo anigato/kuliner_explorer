@@ -44,6 +44,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapBinding
     private lateinit var toolbarBinding: ToolbarBinding
 
+    var title = MainViewModel.title
+
     var permissionArrays = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     lateinit var mapsView: GoogleMap
     lateinit var simpleLocation: SimpleLocation
@@ -142,13 +144,30 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mapsView = googleMap
 
+        val titleString = title
+
+// Membagi string menjadi array menggunakan spasi sebagai pemisah
+        val titleParts = titleString.toString().split(" ")
+
+// Mengambil elemen kedua dari array yang merupakan "Cimol"
+        if (titleParts.size > 1) {
+            val title = titleParts.subList(1, titleParts.size).joinToString(" ")
+            toolbarBinding.tvFoodName.text = "Resto " + title + " disekitarmu"
+        }
+
+//        if (titleParts.size > 1) {
+//            val title = titleParts[1]
+//            toolbarBinding.tvFoodName.text = title
+//        }
+
+
         //set text location
         val geocoder = Geocoder(this, Locale.getDefault())
         try {
             val addressList = geocoder.getFromLocation(strCurrentLatitude, strCurrentLongitude, 1)
             if (addressList != null && addressList.size > 0) {
                 val strCity = addressList[0].subAdminArea
-                toolbarBinding.tvCity.text = strCity
+                toolbarBinding.tvCity.text = "Anda di " + strCity
             }
         } catch (e: IOException) {
             e.printStackTrace()

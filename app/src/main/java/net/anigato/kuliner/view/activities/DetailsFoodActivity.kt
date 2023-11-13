@@ -1,5 +1,6 @@
 package net.anigato.kuliner.view.activities
 
+import android.content.Intent
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,11 +9,13 @@ import net.anigato.kuliner.databinding.ActivityDetailsFoodBinding
 import com.squareup.picasso.Picasso
 import net.anigato.kuliner.view.activities.load.LoadDetailFoods
 import net.anigato.kuliner.view.foodInterface.ILoadDetailFood
+import net.anigato.kuliner.viewmodel.MainViewModel
 
 class DetailsFoodActivity : AppCompatActivity(), ILoadDetailFood {
     private lateinit var binding: ActivityDetailsFoodBinding
     private var urlImage: String? = null
     private var urlDetail: String? = null
+    private var title: String? = null
     private var urlIterasi: String? = null
     private var loadDetailFoods: AsyncTask<Void, Void, ArrayList<String>>? = null
 
@@ -33,7 +36,7 @@ class DetailsFoodActivity : AppCompatActivity(), ILoadDetailFood {
         loadDetailFoods = LoadDetailFoods(this, urlIterasi!!)
         loadDetailFoods!!.execute()
 
-
+        setupListeners()
     }
 
     override fun getDetails(details: ArrayList<String>) {
@@ -56,6 +59,15 @@ class DetailsFoodActivity : AppCompatActivity(), ILoadDetailFood {
             }
 
 //            Log.d("cek detailfood ya", details[index])
+        }
+    }
+
+
+    private fun setupListeners() {
+        MainViewModel.title = intent.getStringExtra("TITLE")
+        binding.btnGoToMap.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
         }
     }
 }
