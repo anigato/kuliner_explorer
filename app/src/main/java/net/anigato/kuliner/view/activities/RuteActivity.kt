@@ -36,6 +36,7 @@ import net.anigato.kuliner.databinding.ActivityRuteBinding
 import java.util.*
 import com.akexorcist.googledirection.model.Direction
 import com.akexorcist.googledirection.util.DirectionConverter
+import com.google.android.gms.maps.model.Polyline
 
 
 class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback {
@@ -59,6 +60,8 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
     var strLongitude = 0.0
     var strOpenHour: List<String> = ArrayList()
 
+    private var activeTransportMode = TransportMode.DRIVING // Default is mobil
+    private var currentPolyline: Polyline? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,7 +113,7 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
             strPlaceId = bundle["placeId"] as String
             strLatitude = bundle["lat"] as Double
             strLongitude = bundle["lng"] as Double
-            strNamaJalan = bundle["vicinity"] as String
+            strNamaJalan = bundle["formatted_address"] as String
 
             //latlong origin & destination
             fromLatLng = LatLng(strCurrentLatitude, strCurrentLongitude)
@@ -152,6 +155,7 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
                 //jam operasional
                 try {
                     strOpenHour = modelDetail.modelOpening.weekdayText
+                    Log.d("cek strOpenHour","$strOpenHour")
 
                     val stringBuilder = StringBuilder()
                     for (strList in strOpenHour) {
@@ -195,25 +199,77 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
                 }
 
                 //show route
-                showDirection()
+//                showDirection()
+
+                // Set default transport mode (mobil)
+                setTransportMode(TransportMode.DRIVING)
+
+                binding.llCar.setOnClickListener {
+                    setTransportMode(TransportMode.DRIVING)
+                }
+
+                binding.llWalking.setOnClickListener {
+                    setTransportMode(TransportMode.WALKING)
+                }
                 progressDialog.dismiss()
             })
         }
     }
 
-    private fun showDirection() {
+    private fun setTransportMode(transportMode: String) {
+
+        activeTransportMode = transportMode
+
+        // Reset all icons to default state (transparent background tint and default padding)
+        binding.imageCar.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.transparent))
+        binding.imageWalking.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.transparent))
+        binding.imageCar.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimary))
+        binding.imageWalking.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimary))
+
+        // Set a large padding value directly (adjust as needed)
+        val largePaddingPx = 16 // Adjust as needed
+
+        when (transportMode) {
+            TransportMode.DRIVING -> {
+                binding.imageCar.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimary))
+                binding.imageCar.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.white))
+                binding.imageCar.setPadding(largePaddingPx, largePaddingPx, largePaddingPx, largePaddingPx)
+            }
+            TransportMode.WALKING -> {
+                binding.imageWalking.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorPrimary))
+                binding.imageWalking.imageTintList = ColorStateList.valueOf(ContextCompat.getColor(this, android.R.color.white))
+                binding.imageWalking.setPadding(largePaddingPx, largePaddingPx, largePaddingPx, largePaddingPx)
+            }
+        }
+
+        // Update direction based on the selected transport mode
+        showDirection(transportMode)
+    }
+
+
+
+    private fun showDirection(transportMode: String) {
         //get latlong for polyline
         GoogleDirection.withServerKey("AIzaSyDlEg-GyBBQmy4BmzgrFSk0n-OOI0RpZZA")
             .from(fromLatLng)
             .to(toLatLng)
-            .transportMode(TransportMode.DRIVING)
+            .transportMode(transportMode) // Gunakan transportMode yang diberikan
             .execute(this)
     }
+
+//    private fun showDirection() {
+//        //get latlong for polyline
+//        GoogleDirection.withServerKey("AIzaSyDlEg-GyBBQmy4BmzgrFSk0n-OOI0RpZZA")
+//            .from(fromLatLng)
+//            .to(toLatLng)
+//            .transportMode(TransportMode.DRIVING)
+//            .execute(this)
+//    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapsView = googleMap
         mapsView.isMyLocationEnabled = true
-        mapsView.setPadding(0, 60, 0, 0)
+        mapsView.setPadding(0, 0, 0, 0)
         mapsView.moveCamera(CameraUpdateFactory.newLatLng(fromLatLng))
         mapsView.animateCamera(CameraUpdateFactory.newLatLngZoom(fromLatLng, 15f))
     }
@@ -221,9 +277,9 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
     override fun onDirectionSuccess(direction: Direction) {
         if (direction.isOK) {
             //show distance & duration
-//            Log.d("cek direction","$direction")
+            Log.d("cek direction","$direction")
             val route = direction.routeList[0]
-//            Log.d("cek rutee","$route")
+            Log.d("cek rutee","$route")
             val leg = route.legList[0]
 //            Log.d("cek leg","$leg")
 
@@ -242,6 +298,9 @@ class RuteActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback 
 
 //            val strDuration = durationInfo.text.replace("mins", "mnt")
             binding.tvDistance.text = "Jarak lokasi tujuan dari lokasi kamu sekarang $strDistance dan waktu tempuh sekitar $strDuration"
+
+            //reset map
+            mapsView.clear()
 
             //set marker current location
             mapsView.addMarker(MarkerOptions()

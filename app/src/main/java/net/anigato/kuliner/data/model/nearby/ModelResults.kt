@@ -11,8 +11,11 @@ class ModelResults : Serializable {
     @SerializedName("name")
     lateinit var name: String
 
-    @SerializedName("vicinity")
-    lateinit var vicinity: String
+//    @SerializedName("vicinity")
+//    lateinit var vicinity: String
+
+    @SerializedName("formatted_address")
+    lateinit var formatted_address: String
 
     @SerializedName("place_id")
     lateinit var placeId: String

@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        supportActionBar?.hide()
+
         modelFoods = intent.getSerializableExtra("FOODS") as? ArrayList<ModelFoods>
         if (modelFoods != null) {
             getTenFoods(modelFoods!!)

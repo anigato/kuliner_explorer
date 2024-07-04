@@ -15,9 +15,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import net.anigato.kuliner.viewmodel.MainViewModel
 import im.delight.android.location.SimpleLocation
-import net.anigato.kuliner.view.activities.load.LoadFoods
 import java.io.IOException
 import java.util.*
 
@@ -56,23 +54,39 @@ class MapInitiationActivity : AppCompatActivity() {
             }
         }
 
-        progressDialog = ProgressDialog(this)
-        progressDialog.setTitle("Mohon Tunggu…")
-        progressDialog.setCancelable(false)
-        progressDialog.setMessage("sedang menampilkan lokasi Kuliner")
-
         // Inisialisasi simpleLocation
         simpleLocation = SimpleLocation(this)
         simpleLocation.beginUpdates()
 
+        checkAndProcessLocation()
+
+    }
+
+    private fun checkAndProcessLocation() {
         if (!simpleLocation.hasLocationEnabled()) {
-            SimpleLocation.openSettings(this)
+            // Jika GPS belum aktif, buka pengaturan lokasi
+            openLocationSettings()
+        } else {
+            // GPS sudah aktif, lanjutkan dengan mendapatkan lokasi dan intent ke SplashActivity
+            continueWithLocation()
         }
+    }
+
+    private fun openLocationSettings() {
+        val intent = Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        Log.d("Cek intent", "$intent")
+        startActivity(intent)
+//        checkAndProcessLocation()
+    }
+
+    private fun continueWithLocation() {
+        // Inisialisasi simpleLocation
+        simpleLocation = SimpleLocation(this)
+        simpleLocation.beginUpdates()
 
         // Dapatkan lokasi terkini
         strCurrentLatitude = simpleLocation.latitude
         strCurrentLongitude = simpleLocation.longitude
-
 
         val geocoder = Geocoder(this, Locale.getDefault())
         try {
@@ -85,10 +99,12 @@ class MapInitiationActivity : AppCompatActivity() {
         }
 
         Log.d("Cek Lokasi sekarang", "$strCity")
+        Log.d("Cek strCurrentLatitude", "$strCurrentLatitude")
+        Log.d("Cek strCurrentLongitude", "$strCurrentLongitude")
 
         // Buka MainActivity setelah mendapatkan lokasi terkini
         val intent = Intent(this, SplashActivity::class.java)
-        intent.putExtra("strCity",strCity)
+        intent.putExtra("strCity", strCity)
         startActivity(intent)
         finish()
     }

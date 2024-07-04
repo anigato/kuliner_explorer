@@ -6,9 +6,9 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -35,7 +35,11 @@ import im.delight.android.location.SimpleLocation
 import net.anigato.kuliner.databinding.ActivityMapBinding
 import net.anigato.kuliner.databinding.ToolbarBinding
 import java.io.IOException
-import java.util.*
+import kotlin.collections.ArrayList
+import android.graphics.BitmapFactory
+import android.graphics.Bitmap
+import com.google.android.gms.maps.model.BitmapDescriptor
+
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapBinding
@@ -53,12 +57,16 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     var strCurrentLatitude = 0.0
     var strCurrentLongitude = 0.0
 
+    lateinit var strCity: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbarBinding = ToolbarBinding.bind(toolbar)
+
+        supportActionBar?.hide()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -82,7 +90,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         progressDialog = ProgressDialog(this)
         progressDialog.setTitle("Mohon Tunggu…")
         progressDialog.setCancelable(false)
-        progressDialog.setMessage("sedang menampilkan lokasi Kuliner")
+        progressDialog.setMessage("sedang mencari resto $title")
 
         simpleLocation = SimpleLocation(this)
         simpleLocation.beginUpdates()
@@ -140,17 +148,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mapsView = googleMap
+        strCity = intent.getStringExtra("strCity").toString()
 
         toolbarBinding.tvFoodName.text = title + " disekitarmu"
 
         //set text location
-        val geocoder = Geocoder(this, Locale.getDefault())
+//        val geocoder = Geocoder(this, Locale.getDefault())
         try {
-            val addressList = geocoder.getFromLocation(strCurrentLatitude, strCurrentLongitude, 1)
-            if (addressList != null && addressList.size > 0) {
-                val strCity = addressList[0].subAdminArea
+//            val addressList = geocoder.getFromLocation(strCurrentLatitude, strCurrentLongitude, 1)
+//            if (addressList != null && addressList.size > 0) {
+//                val strCity = addressList[0].subAdminArea
                 toolbarBinding.tvCity.text = "Anda di " + strCity
-            }
+//            }
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -166,13 +175,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         progressDialog.show()
 
         mainViewModel.getMarkerLocation().observe(this, { modelResults: ArrayList<ModelResults> ->
-            if (modelResults.size != 0) {
+            Log.d("MapActivity", "Data dari ViewModel, jumlah item: ${modelResults.size}")
+            if (modelResults.isNotEmpty()) {
                 mainAdapter.setLocationAdapter(modelResults)
-                //get multiple marker
                 getMarker(modelResults)
                 progressDialog.dismiss()
             } else {
-                Toast.makeText(this, "Oops, tidak bisa mendapatkan lokasi kamu!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Maaf, tidak ada restoran yang menjual $title di sekitar Anda",
+                    Toast.LENGTH_SHORT
+                ).show()
+                progressDialog.dismiss()
             }
         })
     }
@@ -181,7 +195,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val currentLatLng = LatLng(strCurrentLatitude, strCurrentLongitude)
         mapsView.addMarker(MarkerOptions()
             .position(currentLatLng)
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+            .icon(resizeMapIcons(R.drawable.ic_loc_user, 96, 96)) // Adjust width and height as needed
             .title("Current Location"))
 
         for (i in modelResultsArrayList.indices) {
@@ -194,7 +208,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             //get LatLong to Marker
             mapsView.addMarker(MarkerOptions()
                 .position(latLngMarker)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                .icon(resizeMapIcons(R.drawable.ic_loc_restaurant, 96, 96)) // Adjust width and height as needed
                 .title(modelResultsArrayList[i].name))
 
             //show Marker
@@ -255,5 +269,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             getLocationViewModel()
         }
     }
+
+    private fun resizeMapIcons(iconDrawableId: Int, width: Int, height: Int): BitmapDescriptor {
+        val imageBitmap = BitmapFactory.decodeResource(resources, iconDrawableId)
+        val resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false)
+        return BitmapDescriptorFactory.fromBitmap(resizedBitmap)
+    }
+
 
 }

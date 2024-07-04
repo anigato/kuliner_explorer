@@ -48,14 +48,14 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainViewH
         holder.ratingBar.numStars = 5
         holder.ratingBar.stepSize = 0.5.toFloat()
         holder.ratingBar.rating = newValue.toFloat()
-        holder.tvNamaJalan.text = modelResult.vicinity
+        holder.tvNamaJalan.text = modelResult.formatted_address
         holder.tvNamaLokasi.text = modelResult.name
         holder.tvRating.text = "(" + modelResult.rating + ")"
 
         //set data to share & intent
         val strPlaceId = modelResultArrayList[position].placeId
         val strNamaLokasi = modelResultArrayList[position].name
-        val strNamaJalan = modelResultArrayList[position].vicinity
+        val strNamaJalan = modelResultArrayList[position].formatted_address
         val strLat = modelResultArrayList[position].modelGeometry.modelLocation.lat
         val strLong = modelResultArrayList[position].modelGeometry.modelLocation.lng
 
@@ -63,7 +63,9 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainViewH
         holder.linearRute.setOnClickListener {
             val intent = Intent(context, RuteActivity::class.java)
             intent.putExtra("placeId", strPlaceId)
-            intent.putExtra("vicinity", strNamaJalan)
+//            intent.putExtra("vicinity", strNamaJalan)
+            intent.putExtra("formatted_address", strNamaJalan)
+            intent.putExtra("lat", strLat)
             intent.putExtra("lat", strLat)
             intent.putExtra("lng", strLong)
             context.startActivity(intent)

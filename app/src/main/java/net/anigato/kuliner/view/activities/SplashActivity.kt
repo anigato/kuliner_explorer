@@ -15,8 +15,10 @@ class SplashActivity : AppCompatActivity(), IJsoupDataFood {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        loader = LoadInitFoods(this)
+        // Mendapatkan kota dari intent sebelumnya
         strCity = intent.getStringExtra("strCity")
+
+        // Memulai proses pengambilan data makanan
         loader = LoadFoods(this, strCity)
         loader!!.execute()
     }
@@ -52,11 +54,11 @@ class SplashActivity : AppCompatActivity(), IJsoupDataFood {
 //
 //        override fun onPostExecute(result: ArrayList<ModelFoods>?) {
     override fun getWebData(datas: ArrayList<ModelFoods>) {
+        // Ketika proses pengambilan data selesai, intent ke MainActivity
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("FOODS", datas)
         intent.putExtra("strCity", strCity)
         startActivity(intent)
         finish()
-
     }
 }

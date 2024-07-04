@@ -29,14 +29,15 @@ class LoadFoods(var activity: AppCompatActivity?, var strCity: String?): AsyncTa
 
             if( strCity.equals("Kabupaten Bandung") ||
                 strCity.equals("Kabupaten Bandung Barat") ||
-//                strCity.equals("Kota Bandung") ||
+                strCity.equals("Kota Bandung") ||
                 strCity.equals("Kota Cimahi")
             ) {
                 WebTidakTerstruktur("https://www.klook.com/id/blog/makanan-khas-bandung/")
+                WebTerstruktur("https://www.idntimes.com/food/dining-guide/fina-wahibatun-nisa/10-makanan-khas-bekasi-enak-dan-jadi-favorit-banyak-orang-nih?page=all")
             }
 
             if (strCity.equals("Kabupaten Bekasi") ||
-                strCity.equals("Kota Bandung") ||
+//                strCity.equals("Kota Bandung") ||
                 strCity.equals("Kota Bekasi")
 
             ){

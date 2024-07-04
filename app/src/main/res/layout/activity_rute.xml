@@ -222,6 +222,64 @@
                             android:textSize="16sp" />
 
                     </RelativeLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <!-- Mobil -->
+                        <LinearLayout
+                            android:id="@+id/llCar"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <ImageView
+                                android:id="@+id/imageCar"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_car"
+                                app:tint="@color/colorPrimary"
+                                android:background="@drawable/bg_circle_radius"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Mobil"
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp"/>
+                        </LinearLayout>
+
+                        <!-- Jalan Kaki -->
+                        <LinearLayout
+                            android:id="@+id/llWalking"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <ImageView
+                                android:id="@+id/imageWalking"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/ic_walking"
+                                app:tint="@color/colorPrimary"
+                                android:background="@drawable/bg_circle_radius"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Jalan Kaki"
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp"/>
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <RelativeLayout
                         android:layout_width="match_parent"

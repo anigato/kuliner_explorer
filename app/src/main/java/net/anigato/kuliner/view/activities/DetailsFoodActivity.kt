@@ -69,6 +69,7 @@ class DetailsFoodActivity : AppCompatActivity(), ILoadDetailFood {
         MainViewModel.title = intent.getStringExtra("TITLE")
         binding.btnGoToMap.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
+            intent.putExtra("strCity", strCity)
             startActivity(intent)
         }
     }
