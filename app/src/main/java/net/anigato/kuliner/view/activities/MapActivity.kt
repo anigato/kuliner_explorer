@@ -20,7 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.NewInstanceFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.anigato.kuliner.R
-import net.anigato.kuliner.data.model.nearby.ModelResults
+import net.anigato.kuliner.data.model.restoLocation.ModelResults
 import net.anigato.kuliner.view.adapter.MainAdapter
 import net.anigato.kuliner.viewmodel.MainViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -151,15 +151,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         strCity = intent.getStringExtra("strCity").toString()
 
         toolbarBinding.tvFoodName.text = title + " disekitarmu"
-
-        //set text location
-//        val geocoder = Geocoder(this, Locale.getDefault())
         try {
-//            val addressList = geocoder.getFromLocation(strCurrentLatitude, strCurrentLongitude, 1)
-//            if (addressList != null && addressList.size > 0) {
-//                val strCity = addressList[0].subAdminArea
-                toolbarBinding.tvCity.text = "Anda di " + strCity
-//            }
+            toolbarBinding.tvCity.text = "Kamu ada di " + strCity
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -196,7 +189,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapsView.addMarker(MarkerOptions()
             .position(currentLatLng)
             .icon(resizeMapIcons(R.drawable.ic_loc_user, 96, 96)) // Adjust width and height as needed
-            .title("Current Location"))
+            .title("Lokasimu"))
 
         for (i in modelResultsArrayList.indices) {
             //set LatLong from API

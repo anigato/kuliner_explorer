@@ -12,7 +12,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="8dp">
+        android:layout_margin="15dp">
 
         <ImageView
             android:id="@+id/image_card"
@@ -29,9 +29,9 @@
             style="@style/TextAppearance.AppCompat.Headline"
             android:background="@drawable/gradient_title"
             android:text="Title"
-            android:textColor="#ffffff"
+            android:textColor="#fff"
             android:padding="8dp"
-            android:textSize="18sp"
+            android:textSize="24sp"
             android:textStyle="bold"/>
 
     </androidx.cardview.widget.CardView>

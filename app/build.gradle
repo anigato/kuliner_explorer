@@ -74,4 +74,8 @@ dependencies {
 
 //    library picasso untuk tampilkan gambar
     implementation 'com.squareup.picasso:picasso:2.71828'
+
+//    library untuk coroutine kotlin
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.0"
+
 }

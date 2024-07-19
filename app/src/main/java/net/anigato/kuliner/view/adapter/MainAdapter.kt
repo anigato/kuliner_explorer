@@ -2,7 +2,6 @@ package net.anigato.kuliner.view.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,39 +10,38 @@ import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import net.anigato.kuliner.R
-import net.anigato.kuliner.data.model.nearby.ModelResults
+import net.anigato.kuliner.data.model.restoLocation.ModelResults
 import net.anigato.kuliner.databinding.ListItemLocationBinding
-import net.anigato.kuliner.view.activities.RuteActivity
-import net.anigato.kuliner.view.adapter.MainAdapter.MainViewHolder
-//import kotlinx.android.synthetic.main.list_item_location.view.*
+import net.anigato.kuliner.view.activities.NavigationNRestoDetailActivity
 import java.util.*
 
+// Adapter untuk menampilkan daftar lokasi dalam RecyclerView
+class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
-class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainViewHolder>() {
-
+    // Daftar data hasil lokasi
     private val modelResultArrayList = ArrayList<ModelResults>()
+
+    // Binding untuk data item lokasi
     private lateinit var binding: ListItemLocationBinding
 
+    // Mengatur data yang akan ditampilkan di adapter
     fun setLocationAdapter(items: ArrayList<ModelResults>) {
         modelResultArrayList.clear()
         modelResultArrayList.addAll(items)
         notifyDataSetChanged()
     }
 
+    // Menginflate layout item dan menginisialisasi ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
-//        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item_location, parent, false)
-//        return MainViewHolder(view)
         binding = ListItemLocationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MainViewHolder(binding.root)
     }
 
+    // Mengikat data dari model ke ViewHolder
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val modelResult = modelResultArrayList[position]
 
-//        Log.d("cek",modelResult.name)
-
-        //set rating
+        // Mengatur rating
         val newValue = modelResult.rating.toDouble()
         holder.ratingBar.numStars = 5
         holder.ratingBar.stepSize = 0.5.toFloat()
@@ -52,26 +50,24 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainViewH
         holder.tvNamaLokasi.text = modelResult.name
         holder.tvRating.text = "(" + modelResult.rating + ")"
 
-        //set data to share & intent
+        // Mengambil data lokasi untuk dibagikan atau menampilkan rute
         val strPlaceId = modelResultArrayList[position].placeId
         val strNamaLokasi = modelResultArrayList[position].name
         val strNamaJalan = modelResultArrayList[position].formatted_address
         val strLat = modelResultArrayList[position].modelGeometry.modelLocation.lat
         val strLong = modelResultArrayList[position].modelGeometry.modelLocation.lng
 
-        //send data to another activity
+        // Mengirim data ke activity NavigationNRestoDetailActivity untuk menampilkan rute
         holder.linearRute.setOnClickListener {
-            val intent = Intent(context, RuteActivity::class.java)
+            val intent = Intent(context, NavigationNRestoDetailActivity::class.java)
             intent.putExtra("placeId", strPlaceId)
-//            intent.putExtra("vicinity", strNamaJalan)
             intent.putExtra("formatted_address", strNamaJalan)
-            intent.putExtra("lat", strLat)
             intent.putExtra("lat", strLat)
             intent.putExtra("lng", strLong)
             context.startActivity(intent)
         }
 
-        //intent to share location
+        // Intent untuk berbagi lokasi menggunakan aplikasi lain
         holder.imageShare.setOnClickListener {
             val strUri = "http://maps.google.com/maps?daddr=$strLat,$strLong"
             val intent = Intent(Intent.ACTION_SEND)
@@ -82,10 +78,12 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainViewH
         }
     }
 
+    // Mengembalikan jumlah item dalam daftar
     override fun getItemCount(): Int {
         return modelResultArrayList.size
     }
 
+    // ViewHolder untuk item lokasi
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ListItemLocationBinding.bind(itemView)
         var linearRute: LinearLayout
@@ -95,6 +93,7 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainViewH
         var imageShare: ImageView
         var ratingBar: RatingBar
 
+        // Inisialisasi komponen UI dari layout menggunakan data binding
         init {
             linearRute = binding.linearRute
             tvNamaJalan = binding.tvNamaJalan

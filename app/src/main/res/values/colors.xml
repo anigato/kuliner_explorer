@@ -11,4 +11,5 @@
     <color name="colorPrimaryDark">#35b24f</color>
     <color name="colorAccent">#51c569</color>
     <color name="danger">#fc0303</color>
+    <color name="colorGrey">#333333</color>
 </resources>

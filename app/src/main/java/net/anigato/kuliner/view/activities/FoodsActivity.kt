@@ -1,0 +1,146 @@
+package net.anigato.kuliner.view.activities
+
+import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.anigato.kuliner.R
+import net.anigato.kuliner.controller.FoodsController
+import net.anigato.kuliner.controller.LoadFoodsController
+import net.anigato.kuliner.data.model.food.ModelFoods
+import net.anigato.kuliner.databinding.ActivityMainBinding
+import net.anigato.kuliner.view.foodInterface.IJsoupDataFood
+import java.io.IOException
+
+class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
+
+    private lateinit var binding: ActivityMainBinding
+    private var modelFoods: ArrayList<ModelFoods>? = null
+    private lateinit var foodsController: FoodsController
+    private var strCity: String? = null
+    private var currentCity: String? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Sembunyikan ActionBar
+        supportActionBar?.hide()
+
+        // Inisialisasi controller
+        foodsController = FoodsController(this, binding)
+
+        // Mendapatkan nama kota dari Intent
+        strCity = intent.getStringExtra("strCity")
+        currentCity = strCity
+
+        // Setup tampilan dan data dengan controller
+        modelFoods?.let {
+            foodsController.setupViewAndData(it, strCity)
+        }
+
+        // Inisialisasi Spinner
+        setupSpinner()
+
+        // Inisialisasi tombol reset
+        setupResetButton()
+
+        // Mengatur teks awal pada TextView top_bar
+        binding.topBar.text = "Kamu sekarang ada di $strCity"
+
+        // Load foods data
+        strCity?.let { loadFoods(it) }
+    }
+
+    private fun setupSpinner() {
+        val kotaArray = arrayOf(
+            "Pilih daerah lain",
+            "Kabupaten Bandung",
+            "Kabupaten Bandung Barat",
+            "Kabupaten Bekasi",
+            "Kabupaten Bogor",
+            "Kabupaten Ciamis",
+            "Kabupaten Cianjur",
+            "Kabupaten Cirebon",
+            "Kabupaten Garut",
+            "Kabupaten Indramayu",
+            "Kabupaten Karawang",
+            "Kabupaten Kuningan",
+            "Kabupaten Majalengka",
+            "Kabupaten Pangandaran",
+            "Kabupaten Purwakarta",
+            "Kabupaten Subang",
+            "Kabupaten Sukabumi",
+            "Kabupaten Sumedang",
+            "Kabupaten Tasikmalaya",
+            "Kota Bandung",
+            "Kota Banjar",
+            "Kota Bekasi",
+            "Kota Bogor",
+            "Kota Cimahi",
+            "Kota Cirebon",
+            "Kota Depok",
+            "Kota Sukabumi",
+            "Kota Tasikmalaya"
+        )
+
+        val adapter = ArrayAdapter(this, R.layout.spinner_item, kotaArray)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
+        binding.spinnerKota.adapter = adapter
+        binding.spinnerKota.setSelection(0)
+
+        binding.spinnerKota.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                (parent.getChildAt(0) as TextView).setTextColor(0xFFFFFFFF.toInt())
+                val selectedCity = parent.getItemAtPosition(position).toString()
+                if (position != 0) {
+                    binding.infoKuliner.text = "Daftar Kuliner Khas $selectedCity"
+                    loadFoods(selectedCity)
+                } else {
+                    binding.infoKuliner.text = "wanjay"
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                binding.infoKuliner.text = "Daftar Kuliner Khas $strCity"
+            }
+        }
+    }
+
+    private fun setupResetButton() {
+        binding.buttonReset.setOnClickListener {
+            strCity = currentCity
+            binding.spinnerKota.setSelection(0)
+            binding.infoKuliner.text = "Daftar Kuliner Khas $currentCity"
+            currentCity?.let { loadFoods(it) }
+        }
+    }
+
+    private fun loadFoods(city: String) {
+        GlobalScope.launch(Dispatchers.Main) {
+            try {
+                val foods = withContext(Dispatchers.IO) {
+                    val loadFoodsController = LoadFoodsController(this@FoodsActivity, city)
+                    loadFoodsController.loadFoodsFromCity()
+                }
+                getWebData(foods)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                // Handle error if needed
+            }
+        }
+    }
+
+    override fun getWebData(datas: ArrayList<ModelFoods>) {
+        modelFoods = datas
+        foodsController.setupViewAndData(datas, strCity)
+    }
+}

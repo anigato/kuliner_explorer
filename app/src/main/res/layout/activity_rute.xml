@@ -9,16 +9,7 @@
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="450dp" />
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="35dp"
-        android:background="@drawable/bg_circle_radius"
-        app:navigationIcon="@drawable/ic_back" />
+        android:layout_height="500dp" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -318,7 +309,8 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="50dp"
                             android:text="Jam"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                            android:typeface="monospace" />
 
                     </RelativeLayout>
 
