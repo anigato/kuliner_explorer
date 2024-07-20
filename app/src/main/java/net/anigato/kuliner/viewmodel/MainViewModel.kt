@@ -13,6 +13,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * ViewModel untuk aktivitas utama, mengelola data yang diperlukan untuk menampilkan lokasi restoran.
@@ -47,18 +48,29 @@ class MainViewModel : ViewModel() {
                     Log.e("response", response.toString()) // Log jika respon tidak berhasil
                 } else if (body != null) {
                     Log.d("MainViewModel", "Jumlah hasil yang ditemukan: ${body.modelResults.size}")
-                    val items = ArrayList(body.modelResults)
-                    modelResultsMutableLiveData.postValue(items) // Mengirimkan hasil pencarian ke LiveData
-
+                    val items = ArrayList<ModelResults>() // Daftar untuk menyimpan data yang valid
+                    var checkedCount = 0 // Counter untuk melacak jumlah item yang telah diperiksa
                     // Mendapatkan place_id dari hasil
                     for (result in body.modelResults) {
                         val placeId = result.placeId
                         // Panggil fungsi checkJarak dengan placeId yang diperoleh
-                        checkJarak(placeId,strLocation)
-                        Log.d("MainViewModel", "place_id: $placeId")
+                        checkJarak(placeId, strLocation) { isWithinRange ->
+                            checkedCount++ // Tingkatkan counter saat item diperiksa
+                            if (isWithinRange) {
+                                Log.d("MainViewModel", "place_id: $placeId")
+                                items.add(result) // Menyimpan hasil yang valid
+                            }
+                            // Jika semua item telah diperiksa
+                            if (checkedCount == body.modelResults.size) {
+                                if (items.isEmpty()) {
+                                    modelResultsMutableLiveData.postValue(ArrayList()) // Mengirimkan daftar kosong jika tidak ada data yang valid
+                                } else {
+                                    modelResultsMutableLiveData.postValue(items) // Mengirimkan hasil yang valid ke LiveData
+                                }
+                                Log.d("MainViewModel", "Data berhasil diambil, jumlah item yang valid: ${items.size}")
+                            }
+                        }
                     }
-
-                    Log.d("MainViewModel", "Data berhasil diambil, jumlah item: ${items.size}")
                 }
             }
 
@@ -68,6 +80,8 @@ class MainViewModel : ViewModel() {
         })
         Log.d("MainViewModel", "Set Marker Location: $strLocation") // Log lokasi yang diatur untuk marker
     }
+
+
 
     /**
      * Metode untuk mengambil detail lokasi restoran berdasarkan ID tempat.
@@ -95,7 +109,7 @@ class MainViewModel : ViewModel() {
     /**
      * Metode untuk mengambil jarak lokasi restoran berdasarkan ID tempat.
      */
-    fun checkJarak(strPlaceID: String, strLocation: String) {
+    fun checkJarak(strPlaceID: String, strLocation: String, callback: (Boolean) -> Unit) {
         val apiService = ApiClient.getClient() // Mendapatkan klien retrofit untuk layanan API
         val call = apiService.getJarakResto(strApiKey, strLocation, "place_id:$strPlaceID")
         call.enqueue(object : Callback<ModelResultDetailResto> {
@@ -103,17 +117,23 @@ class MainViewModel : ViewModel() {
                 val body = response.body()
                 Log.d("MainViewModel", "Detail Respon API: ${response.raw()}")  // Log detail respon mentah dari API
                 if (!response.isSuccessful) {
-                    Log.e("MainViewModel","gagal " + response.toString()) // Log jika respon tidak berhasil
+                    Log.e("MainViewModel", "gagal " + response.toString()) // Log jika respon tidak berhasil
+                    callback(false)
                 } else if (body != null) {
-                    Log.e("MainViewModel","masuk " + response.toString()) // Log jika respon tidak berhasil
+                    val distance = body.routes?.firstOrNull()?.legs?.firstOrNull()?.distance?.value ?: 0
+                    val result = distance < 15000
+                    callback(result)
                 }
             }
 
             override fun onFailure(call: Call<ModelResultDetailResto>, t: Throwable) {
                 Log.e("failure", t.toString()) // Log jika terjadi kegagalan saat mengambil data
+                callback(false)
             }
         })
     }
+
+
 
     /**
      * Mengambil LiveData untuk hasil pencarian lokasi restoran.

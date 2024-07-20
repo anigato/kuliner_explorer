@@ -38,6 +38,7 @@ import java.io.IOException
 import kotlin.collections.ArrayList
 import android.graphics.BitmapFactory
 import android.graphics.Bitmap
+import android.os.Handler
 import com.google.android.gms.maps.model.BitmapDescriptor
 
 
@@ -165,10 +166,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun getLocationViewModel() {
         mainViewModel = ViewModelProvider(this, NewInstanceFactory()).get(MainViewModel::class.java)
         mainViewModel.setMarkerLocation(strCurrentLocation)
+        progressDialog.dismiss()
         progressDialog.show()
 
         mainViewModel.getMarkerLocation().observe(this, { modelResults: ArrayList<ModelResults> ->
-            Log.d("MapActivity", "Data dari ViewModel, jumlah item: ${modelResults.size}")
+            Log.d("MapActivity getmarker", "Data dari ViewModel, jumlah item: ${modelResults.size}")
             if (modelResults.isNotEmpty()) {
                 mainAdapter.setLocationAdapter(modelResults)
                 getMarker(modelResults)
@@ -179,10 +181,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                     "Maaf, tidak ada restoran yang menjual $title di sekitar Anda",
                     Toast.LENGTH_SHORT
                 ).show()
-                progressDialog.dismiss()
+
+                // Menutup progressDialog secara otomatis dan berpindah ke FoodsActivity
+                Handler().postDelayed({
+                    progressDialog.dismiss()
+                    // Langsung navigasi ke FoodsActivity
+                    val intent = Intent(this, FoodsActivity::class.java)
+                    intent.putExtra("strCity", strCity)
+                    startActivity(intent)
+                }, 2000) // Waktu tunggu 2 detik sebelum pindah ke FoodsActivity
             }
         })
     }
+
 
     private fun getMarker(modelResultsArrayList: ArrayList<ModelResults>) {
         val currentLatLng = LatLng(strCurrentLatitude, strCurrentLongitude)

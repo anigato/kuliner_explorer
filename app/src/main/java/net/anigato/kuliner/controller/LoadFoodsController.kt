@@ -51,14 +51,59 @@ class LoadFoodsController(
 
         try {
             when (strCity) {
-                "Kabupaten Bogor", "Kota Bogor" -> {
-                    webTidakTerstruktur("https://www.detik.com/jabar/kuliner/d-6714903/10-makanan-khas-bogor-rekomendasi-untuk-pecinta-kuliner", modelFoods)
-                }
                 "Kabupaten Bandung", "Kabupaten Bandung Barat", "Kota Bandung", "Kota Cimahi" -> {
                     webTidakTerstruktur("https://www.klook.com/id/blog/makanan-khas-bandung/", modelFoods)
                 }
                 "Kabupaten Bekasi", "Kota Bekasi" -> {
                     webTerstruktur("https://www.idntimes.com/food/dining-guide/fina-wahibatun-nisa/10-makanan-khas-bekasi-enak-dan-jadi-favorit-banyak-orang-nih?page=all", modelFoods)
+                }
+                "Kabupaten Bogor", "Kota Bogor" -> {
+                    webTidakTerstruktur("https://www.detik.com/jabar/kuliner/d-6714903/10-makanan-khas-bogor-rekomendasi-untuk-pecinta-kuliner", modelFoods)
+                }
+                "Kabupaten Ciamis", "Kota Bandung" -> {
+                    webTerstruktur("", modelFoods)
+                }
+                "Kabupaten Cianjur" -> {
+
+                }
+                "Kabupaten Cirebon", "Kota Cirebon" -> {
+
+                }
+                "Kabupaten Garut" -> {
+
+                }
+                "Kabupaten Indramayu" -> {
+
+                }
+                "Kabupaten Karawang" -> {
+
+                }
+                "Kabupaten Kuningan" -> {
+
+                }
+                "Kabupaten Majalengka" -> {
+
+                }
+                "Kabupaten Pangandaran" -> {
+
+                }
+                "Kabupaten Subang" -> {
+
+                }
+                "Kabupaten Sukabumi", "Kota Sukabumi" -> {
+
+                }
+                "Kabupaten Sumedang" -> {
+
+                }
+                "Kabupaten Tasikmalaya", "Kota Tasikmalaya" -> {
+
+                }
+                "Kota Banjar" -> {
+
+                }
+                "Kota Depok" -> {
+
                 }
             }
         } catch (e: IOException) {

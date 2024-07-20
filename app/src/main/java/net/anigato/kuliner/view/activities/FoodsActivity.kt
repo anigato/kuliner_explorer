@@ -62,7 +62,7 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
 
     private fun setupSpinner() {
         val kotaArray = arrayOf(
-            "Pilih daerah lain",
+            "Pilih Daerah Lain",
             "Kabupaten Bandung",
             "Kabupaten Bandung Barat",
             "Kabupaten Bekasi",
@@ -105,7 +105,7 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
                     binding.infoKuliner.text = "Daftar Kuliner Khas $selectedCity"
                     loadFoods(selectedCity)
                 } else {
-                    binding.infoKuliner.text = "wanjay"
+                    binding.infoKuliner.text = "Daftar Kuliner Khas $strCity"
                 }
             }
 

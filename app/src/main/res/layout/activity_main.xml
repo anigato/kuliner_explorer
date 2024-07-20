@@ -5,17 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.activities.FoodsActivity"
-    android:background="#e6e6e6">
+    android:background="#dae6db">
 
     <!-- Bar merah dengan tulisan "Lokasimu" -->
     <TextView
         android:id="@+id/top_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#FF0000"
+        android:background="#c0ccc2"
         android:text="Lokasimu"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
+        android:textColor="#000000"
+        android:textSize="19sp"
         android:textStyle="bold"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,49 +23,50 @@
         app:layout_constraintRight_toRightOf="parent"
         android:padding="16dp"/>
 
-    <!-- Tombol dropdown untuk memilih kota -->
     <Spinner
         android:id="@+id/spinner_kota"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        android:spinnerMode="dropdown"
+        android:drawableEnd="@android:drawable/arrow_down_float"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:spinnerMode="dropdown"/>
+        app:layout_constraintTop_toBottomOf="@id/top_bar" />
 
-    <!-- Tombol reset -->
+
+    <!-- RecyclerView untuk daftar kuliner -->
     <Button
         android:id="@+id/button_reset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorPrimary"
+        android:padding="8dp"
         android:text="Reset"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/spinner_kota"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.95"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        android:padding="8dp"/>
+        app:layout_constraintTop_toBottomOf="@id/spinner_kota" />
 
-    <!-- TextView untuk info kuliner -->
     <TextView
         android:id="@+id/info_kuliner"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#FF0000"
-        android:text="Daftar Kuliner khas"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:textStyle="bold"
+        android:background="#c0ccc2"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/button_reset"
+        android:padding="10dp"
+        android:text="Daftar Kuliner khas"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:padding="10dp"/>
+        app:layout_constraintTop_toBottomOf="@id/button_reset" />
 
-    <!-- RecyclerView untuk daftar kuliner -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="0dp"
