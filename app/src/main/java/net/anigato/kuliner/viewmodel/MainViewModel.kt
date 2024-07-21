@@ -140,9 +140,9 @@ class MainViewModel : ViewModel() {
      */
     fun getMarkerLocation(): LiveData<ArrayList<ModelResults>> {
         modelResultsMutableLiveData.value?.let {
-            Log.d("MainViewModel", "Get Marker Location: ${it.size} items")
+            Log.d("MapActivity getmarker", "Get Marker Location: ${it.size} items")
         } ?: run {
-            Log.d("MainViewModel", "Get Marker Location: null")
+            Log.d("MapActivity getmarker", "Get Marker Location: null")
         }
         return modelResultsMutableLiveData
     }

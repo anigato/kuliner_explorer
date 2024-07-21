@@ -91,7 +91,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         progressDialog = ProgressDialog(this)
         progressDialog.setTitle("Mohon Tunggu…")
         progressDialog.setCancelable(false)
-        progressDialog.setMessage("sedang mencari resto $title")
+        progressDialog.setMessage("Sedang mencari Resto yang menjual $title")
 
         simpleLocation = SimpleLocation(this)
         simpleLocation.beginUpdates()
@@ -164,9 +164,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     //get multiple marker
     private fun getLocationViewModel() {
+        Log.d("MapActivity getmarker", "getLocationViewModel()")
         mainViewModel = ViewModelProvider(this, NewInstanceFactory()).get(MainViewModel::class.java)
         mainViewModel.setMarkerLocation(strCurrentLocation)
-        progressDialog.dismiss()
         progressDialog.show()
 
         mainViewModel.getMarkerLocation().observe(this, { modelResults: ArrayList<ModelResults> ->
