@@ -105,6 +105,9 @@ class LoadFoodsController(
                 "Kota Depok" -> {
                     webNoImage(false, "https://infokost.id/blog/makanan-khas-depok-wajib-coba/110758/", modelFoods)
                 }
+                "Kabupaten Purwakarta" -> {
+                    webWithImage(false, "https://salsawisata.com/makanan-khas-purwakarta/", modelFoods)
+                }
             }
         } catch (e: IOException) {
             throw e
@@ -332,19 +335,7 @@ class LoadFoodsController(
             else -> mapOf()
         }
 
-        if (terstruktur) {
-//            val elements = document.select("div.split-page")
-//            val size: Int = elements.size
-//            for (index: Int in 0 until size) {
-//                val foodSplit = elements.select("h2").eq(index).text().split(" ")
-//                val foodName = foodSplit.subList(1, foodSplit.size).joinToString(" ")
-//                val foodImg = listFoodImage[foodName] ?: ""
-//                val foodDetail: String = elements.select("p").eq(index).text()
-//
-//                Log.d("cek scrap", "FoodName: $foodName \n Img: $foodImg \n Index: $index \n Detail: $foodDetail")
-//                modelFoods.add(ModelFoods(foodImg, foodName, foodDetail, index.toString()))
-//            }
-        } else {
+        if (!terstruktur) {
 
             val elements = when (strCity) {
                 "Kabupaten Ciamis", "Kabupaten Cianjur", "Kabupaten Garut", "Kabupaten Indramayu", "Kabupaten Karawang", "Kabupaten Subang","Kabupaten Sukabumi", "Kota Sukabumi","Kabupaten Sumedang", "Kabupaten Tasikmalaya", "Kota Tasikmalaya", "Kota Depok" -> document.select("h3:matchesOwn(\\d+\\.)")
@@ -425,24 +416,39 @@ class LoadFoodsController(
         }else{
             val elements = when (strCity) {
                 "Kabupaten Kuningan" -> document.select("h3:matchesOwn(\\d+\\.)")
+                "Kabupaten Purwakarta" -> document.select("h3")
                 "Kabupaten Bandung", "Kabupaten Bandung Barat", "Kota Bandung", "Kota Cimahi", "Kabupaten Bogor", "Kota Bogor" -> document.select("h2:matchesOwn(\\d+\\.)")
                 "Kabupaten Pangandaran" -> document.select("p:has(strong:matches(\\d+\\.))")
-                else -> document.select("h2:matchesOwn(\\d+\\.)")
+                else -> document.select("h3:matchesOwn(\\d+\\.)")
             }
             if (elements.isEmpty()) {
                 Log.d("cek scrap", "No elements found")
             } else {
                 var currentIndex = 0
-                val size: Int = elements.size
+                val size: Int = when(strCity){
+                    "Kabupaten Purwakarta" -> elements.size-1
+                    else -> elements.size
+                }
 
                 while (currentIndex < size) {
                     val foodSplit = elements[currentIndex].text().split(" ")
-                    val foodName = foodSplit.subList(1, foodSplit.size).joinToString(" ")
+
+                    val foodName = when(strCity){
+                        "Kabupaten Purwakarta" -> foodSplit.subList(0, foodSplit.size).joinToString(" ")
+                        else -> foodSplit.subList(1, foodSplit.size).joinToString(" ")
+                    }
                     var foodImg = ""
 
                     for (index: Int in 1 until foodSplit.size) {
-                        if (strCity.equals("Kabupaten Bogor") || strCity.equals("Kota Bogor") || strCity.equals("Kabupaten Pangandaran")) {
-                            foodImg = document.select("img[alt*=${foodSplit[index]}]").attr("src")
+                        if (strCity.equals("Kabupaten Bogor") || strCity.equals("Kota Bogor") || strCity.equals("Kabupaten Pangandaran") || strCity.equals("Kabupaten Purwakarta")) {
+                            val imgElement = when (strCity) {
+                                "Kabupaten Purwakarta" -> document.select("img[alt*=${foodSplit[index-1]}]")
+                                else -> document.select("img[alt*=${foodSplit[index]}]")
+                            }
+                            foodImg = when {
+                                imgElement.hasAttr("data-lazy-src") -> imgElement.attr("data-lazy-src")
+                                else -> imgElement.attr("src")
+                            }
                         } else if (strCity.equals("Kabupaten Kuningan")|| strCity.equals("Kabupaten Bandung") || strCity.equals("Kabupaten Bandung Barat") || strCity.equals("Kota Bandung") || strCity.equals("Kota Cimahi")) {
                             foodImg = document.select("img[alt*=${foodSplit[index]}]").attr("data-src")
                         }
@@ -453,12 +459,20 @@ class LoadFoodsController(
                         foodImg = document.select("img[alt*=dongkal]").attr("src")
                     }
 
+                    if (strCity.equals("Kabupaten Purwakarta") && foodName.contains("Simping")) {
+                        foodImg = document.select("img[alt*=simping purwakarta]").attr("data-lazy-src")
+                    }else if (strCity.equals("Kabupaten Purwakarta") && foodName.contains("Colenak")) {
+                        foodImg = document.select("img[alt*=Colenak]").attr("data-lazy-src")
+                    }else if (strCity.equals("Kabupaten Purwakarta") && foodName.contains("Sate Maranggi")) {
+                        foodImg = "https://awsimages.detik.net.id/community/media/visual/2020/03/06/4944d259-0db3-4c09-b23b-cea7142586d7_169.jpeg?w=1200"
+                    }
+
                     val foodDetailList = mutableListOf<String>()
 
                     var currentElement = elements[currentIndex].nextElementSibling()
 
                     while (currentElement != null && (currentElement.tagName() != "h2" && currentElement.tagName() != "h3")) {
-                        if (strCity.equals("Kabupaten Bogor") || strCity.equals("Kota Bogor") || strCity.equals("Kabupaten Kuningan")) {
+                        if (strCity.equals("Kabupaten Bogor") || strCity.equals("Kota Bogor") || strCity.equals("Kabupaten Kuningan") || strCity.equals("Kabupaten Purwakarta")) {
                             if (currentElement.tagName() == "p") {
                                 foodDetailList.add(currentElement.text())
                             }

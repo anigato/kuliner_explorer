@@ -26,6 +26,7 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
     private lateinit var foodsController: FoodsController
     private var strCity: String? = null
     private var currentCity: String? = null
+    private lateinit var kotaArray: Array<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,26 +43,8 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
         strCity = intent.getStringExtra("strCity")
         currentCity = strCity
 
-        // Setup tampilan dan data dengan controller
-        modelFoods?.let {
-            foodsController.setupViewAndData(it, strCity)
-        }
-
-        // Inisialisasi Spinner
-        setupSpinner()
-
-        // Inisialisasi tombol reset
-        setupResetButton()
-
-        // Mengatur teks awal pada TextView top_bar
-        binding.topBar.text = "Kamu sekarang ada di $strCity"
-
-        // Load foods data
-        strCity?.let { loadFoods(it) }
-    }
-
-    private fun setupSpinner() {
-        val kotaArray = arrayOf(
+        // Inisialisasi array kota
+        kotaArray = arrayOf(
             "Pilih Daerah Lain",
             "Kabupaten Bandung",
             "Kabupaten Bandung Barat",
@@ -92,6 +75,25 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
             "Kota Tasikmalaya"
         )
 
+        // Setup tampilan dan data dengan controller
+        modelFoods?.let {
+            foodsController.setupViewAndData(it, strCity)
+        }
+
+        // Inisialisasi Spinner
+        setupSpinner()
+
+        // Inisialisasi tombol reset
+        setupResetButton()
+
+        // Mengatur teks awal pada TextView top_bar
+        binding.topBar.text = "Kamu sekarang ada di ${strCity}"
+
+        // Load foods data
+        strCity?.let { loadFoods(it) }
+    }
+
+    private fun setupSpinner() {
         val adapter = ArrayAdapter(this, R.layout.spinner_item, kotaArray)
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         binding.spinnerKota.adapter = adapter
@@ -100,17 +102,17 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
         binding.spinnerKota.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 (parent.getChildAt(0) as TextView).setTextColor(0xFFFFFFFF.toInt())
-                val selectedCity = parent.getItemAtPosition(position).toString()
+                val strCityDropdown = parent.getItemAtPosition(position).toString()
                 if (position != 0) {
-                    binding.infoKuliner.text = "Daftar Kuliner Khas $selectedCity"
-                    loadFoods(selectedCity)
+                    binding.infoKuliner.text = "Daftar Kuliner Khas $strCityDropdown"
+                    loadFoods(strCityDropdown)
                 } else {
-                    binding.infoKuliner.text = "Daftar Kuliner Khas $strCity"
+                    binding.infoKuliner.text = "${checkLocation(strCity)}"
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
-                binding.infoKuliner.text = "Daftar Kuliner Khas $strCity"
+                binding.infoKuliner.text = "${checkLocation(strCity)}"
             }
         }
     }
@@ -119,7 +121,7 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
         binding.buttonReset.setOnClickListener {
             strCity = currentCity
             binding.spinnerKota.setSelection(0)
-            binding.infoKuliner.text = "Daftar Kuliner Khas $currentCity"
+            binding.infoKuliner.text = "${checkLocation(currentCity)}"
             currentCity?.let { loadFoods(it) }
         }
     }
@@ -142,5 +144,13 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
     override fun getWebData(datas: ArrayList<ModelFoods>) {
         modelFoods = datas
         foodsController.setupViewAndData(datas, strCity)
+    }
+
+    private fun checkLocation(city: String?): String {
+        return if (city != null && kotaArray.contains(city)) {
+            "Daftar Kuliner Khas ${city}"
+        } else {
+            "Kamu Diluar Jawa Barat! Silahkan Pilih Daerah Lain!"
+        }
     }
 }

@@ -37,49 +37,56 @@ class MainViewModel : ViewModel() {
      * Mengambil data dari API berdasarkan lokasi dan judul restoran.
      */
     fun setMarkerLocation(strLocation: String) {
-        val apiService = ApiClient.getClient() // Mendapatkan klien retrofit untuk layanan API
+        val apiService = ApiClient.getClient()
         val title = title.toString()
         val call = apiService.getDataResult(strApiKey, "tempat yang menjual $title", strLocation, "distance", "id")
+
         call.enqueue(object : Callback<ModelResultRestoLocation> {
             override fun onResponse(call: Call<ModelResultRestoLocation>, response: Response<ModelResultRestoLocation>) {
                 val body = response.body()
-                Log.d("MainViewModel", "Respon API: ${response.raw()}")  // Log detail respon mentah dari API
-                if (!response.isSuccessful) {
-                    Log.e("response", response.toString()) // Log jika respon tidak berhasil
-                } else if (body != null) {
+                Log.d("MainViewModel", "Respon API: ${response.raw()}")
+
+                if (response.isSuccessful && body != null) {
                     Log.d("MainViewModel", "Jumlah hasil yang ditemukan: ${body.modelResults.size}")
-                    val items = ArrayList<ModelResults>() // Daftar untuk menyimpan data yang valid
-                    var checkedCount = 0 // Counter untuk melacak jumlah item yang telah diperiksa
-                    // Mendapatkan place_id dari hasil
-                    for (result in body.modelResults) {
-                        val placeId = result.placeId
-                        // Panggil fungsi checkJarak dengan placeId yang diperoleh
-                        checkJarak(placeId, strLocation) { isWithinRange ->
-                            checkedCount++ // Tingkatkan counter saat item diperiksa
-                            if (isWithinRange) {
-                                Log.d("MainViewModel", "place_id: $placeId")
-                                items.add(result) // Menyimpan hasil yang valid
-                            }
-                            // Jika semua item telah diperiksa
-                            if (checkedCount == body.modelResults.size) {
-                                if (items.isEmpty()) {
-                                    modelResultsMutableLiveData.postValue(ArrayList()) // Mengirimkan daftar kosong jika tidak ada data yang valid
-                                } else {
-                                    modelResultsMutableLiveData.postValue(items) // Mengirimkan hasil yang valid ke LiveData
-                                }
-                                Log.d("MainViewModel", "Data berhasil diambil, jumlah item yang valid: ${items.size}")
-                            }
-                        }
+                    if (body.modelResults.isNotEmpty()) {
+                        processResults(body.modelResults, strLocation)
+                    } else {
+                        modelResultsMutableLiveData.postValue(ArrayList())
                     }
+                } else {
+                    Log.e("response", response.toString())
                 }
             }
 
             override fun onFailure(call: Call<ModelResultRestoLocation>, t: Throwable) {
-                Log.e("failure", t.toString()) // Log jika terjadi kegagalan saat mengambil data
+                Log.e("failure", t.toString())
             }
         })
-        Log.d("MainViewModel", "Set Marker Location: $strLocation") // Log lokasi yang diatur untuk marker
+        Log.d("MainViewModel", "Set Marker Location: $strLocation")
     }
+
+    private fun processResults(results: List<ModelResults>, strLocation: String) {
+        val items = ArrayList<ModelResults>()
+        var checkedCount = 0
+
+        for (result in results) {
+            checkJarak(result.placeId, strLocation) { isWithinRange ->
+                checkedCount++
+                if (isWithinRange) {
+                    items.add(result)
+                }
+                if (checkedCount == results.size) {
+                    if (items.isEmpty()) {
+                        modelResultsMutableLiveData.postValue(ArrayList())
+                    } else {
+                        modelResultsMutableLiveData.postValue(items)
+                    }
+                    Log.d("MainViewModel", "Data berhasil diambil, jumlah item yang valid: ${items.size}")
+                }
+            }
+        }
+    }
+
 
 
 
