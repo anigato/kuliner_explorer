@@ -1,5 +1,7 @@
 package net.anigato.kuliner.data.model.food
 
+import java.io.Serializable
+
 /**
  * Kelas model yang merepresentasikan detail sebuah item makanan.
  *
@@ -9,9 +11,9 @@ package net.anigato.kuliner.data.model.food
  * @property iterasi Identifier atau nomor urutan untuk item makanan ini,
  *                    digunakan untuk tujuan pengurutan atau identifikasi.
  */
-class ModelFoods(
+data class ModelFoods(
     var image: String,
     var title: String,
     var detail: String,
     var iterasi: String
-) : java.io.Serializable
+) : Serializable

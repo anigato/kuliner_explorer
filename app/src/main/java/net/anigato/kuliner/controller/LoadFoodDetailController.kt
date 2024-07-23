@@ -2,10 +2,7 @@ package net.anigato.kuliner.controller
 
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import net.anigato.kuliner.view.foodInterface.ILoadDetailFood
 import java.io.IOException
 
@@ -19,8 +16,9 @@ class LoadFoodDetailController(
 
     // Metode untuk memulai proses pemrosesan latar belakang menggunakan Coroutine
     fun startLoading() {
-        GlobalScope.launch(Dispatchers.Main) {
+        CoroutineScope(Dispatchers.Main).launch {
             try {
+                // Memuat detail makanan dari URL dalam konteks IO
                 val details = withContext(Dispatchers.IO) {
                     loadDetailsFromUrl()
                 }
@@ -28,7 +26,7 @@ class LoadFoodDetailController(
                 loader.getDetails(details) // Memanggil metode loader untuk mengirimkan hasil pemrosesan
             } catch (e: IOException) {
                 e.printStackTrace()
-                // Handle error if needed
+                // Tangani error jika diperlukan
             }
         }
     }
@@ -38,8 +36,8 @@ class LoadFoodDetailController(
         val details = ArrayList<String>()
         urlDetail?.let { url ->
             try {
-                details.add(url) // Menambahkan URL detail ke daftar detail
-
+                // Di sini seharusnya dilakukan parsing HTML dengan Jsoup
+                details.add(url) // Menambahkan URL detail ke daftar detail (contoh saja)
             } catch (e: IOException) {
                 throw e
             }

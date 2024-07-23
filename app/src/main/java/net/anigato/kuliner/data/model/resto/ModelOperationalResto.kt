@@ -8,10 +8,10 @@ import com.google.gson.annotations.SerializedName
  * @property openNow Menyatakan apakah restoran buka saat ini atau tidak.
  * @property weekdayText Daftar teks hari kerja yang berisi informasi jadwal operasional restoran.
  */
-class ModelOperationalResto {
+data class ModelOperationalResto(
     @SerializedName("open_now")
-    var openNow: Boolean? = null
+    val openNow: Boolean? = null,
 
     @SerializedName("weekday_text")
-    lateinit var weekdayText: List<String>
-}
+    val weekdayText: List<String> = emptyList()
+)

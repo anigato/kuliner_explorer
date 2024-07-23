@@ -15,14 +15,10 @@ import net.anigato.kuliner.databinding.ListItemLocationBinding
 import net.anigato.kuliner.view.activities.NavigationNRestoDetailActivity
 import java.util.*
 
-// Adapter untuk menampilkan daftar lokasi dalam RecyclerView
 class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
     // Daftar data hasil lokasi
     private val modelResultArrayList = ArrayList<ModelResults>()
-
-    // Binding untuk data item lokasi
-    private lateinit var binding: ListItemLocationBinding
 
     // Mengatur data yang akan ditampilkan di adapter
     fun setLocationAdapter(items: ArrayList<ModelResults>) {
@@ -33,8 +29,8 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainAdapt
 
     // Menginflate layout item dan menginisialisasi ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
-        binding = ListItemLocationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return MainViewHolder(binding.root)
+        val binding = ListItemLocationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MainViewHolder(binding)
     }
 
     // Mengikat data dari model ke ViewHolder
@@ -42,13 +38,12 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainAdapt
         val modelResult = modelResultArrayList[position]
 
         // Mengatur rating
-        val newValue = modelResult.rating.toDouble()
         holder.ratingBar.numStars = 5
-        holder.ratingBar.stepSize = 0.5.toFloat()
-        holder.ratingBar.rating = newValue.toFloat()
+        holder.ratingBar.stepSize = 0.5f
+        holder.ratingBar.rating = modelResult.rating.toFloat()
         holder.tvNamaJalan.text = modelResult.formatted_address
         holder.tvNamaLokasi.text = modelResult.name
-        holder.tvRating.text = "(" + modelResult.rating + ")"
+        holder.tvRating.text = "(${modelResult.rating})"
 
         // Mengambil data lokasi untuk dibagikan atau menampilkan rute
         val strPlaceId = modelResultArrayList[position].placeId
@@ -84,24 +79,12 @@ class MainAdapter(private val context: Context) : RecyclerView.Adapter<MainAdapt
     }
 
     // ViewHolder untuk item lokasi
-    class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val binding = ListItemLocationBinding.bind(itemView)
-        var linearRute: LinearLayout
-        var tvNamaJalan: TextView
-        var tvNamaLokasi: TextView
-        var tvRating: TextView
-        var imageShare: ImageView
-        var ratingBar: RatingBar
-
-        // Inisialisasi komponen UI dari layout menggunakan data binding
-        init {
-            linearRute = binding.linearRute
-            tvNamaJalan = binding.tvNamaJalan
-            tvNamaLokasi = binding.tvNamaLokasi
-            tvRating = binding.tvRating
-            imageShare = binding.imageShare
-            ratingBar = binding.ratingBar
-        }
+    class MainViewHolder(binding: ListItemLocationBinding) : RecyclerView.ViewHolder(binding.root) {
+        val linearRute: LinearLayout = binding.linearRute
+        val tvNamaJalan: TextView = binding.tvNamaJalan
+        val tvNamaLokasi: TextView = binding.tvNamaLokasi
+        val tvRating: TextView = binding.tvRating
+        val imageShare: ImageView = binding.imageShare
+        val ratingBar: RatingBar = binding.ratingBar
     }
-
 }

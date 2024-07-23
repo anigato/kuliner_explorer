@@ -8,11 +8,13 @@ import net.anigato.kuliner.view.adapter.FoodAdapter
 
 class FoodsController(private val activity: AppCompatActivity, private val binding: ActivityMainBinding) {
 
-    fun setupViewAndData(listFoods: ArrayList<ModelFoods>, strCity: String?, ) {
+    // Fungsi untuk mengatur tampilan dan data
+    fun setupViewAndData(listFoods: ArrayList<ModelFoods>, strCity: String?) {
         val foodsLoad = getFoods(listFoods)
         setupRecyclerView(foodsLoad, strCity)
     }
 
+    // Fungsi untuk mengatur RecyclerView
     private fun setupRecyclerView(foodsLoad: MutableList<ModelFoods?>, strCity: String?) {
         // Setup RecyclerView dengan LinearLayoutManager
         binding.recyclerview.layoutManager = LinearLayoutManager(activity)
@@ -22,16 +24,14 @@ class FoodsController(private val activity: AppCompatActivity, private val bindi
         binding.recyclerview.adapter = foodAdapter
     }
 
+    // Fungsi untuk mengambil data makanan
     private fun getFoods(listFoods: ArrayList<ModelFoods>): MutableList<ModelFoods?> {
+        // Menyiapkan list untuk menampung data makanan yang di-load
         val foodsLoad: MutableList<ModelFoods?> = ArrayList()
-        val limit = listFoods.size // Ambil semua data jika kurang dari atau sama dengan 10
 
-        for (index: Int in 0 until limit) {
-            foodsLoad.add(listFoods[index])
-        }
+        // Mengambil semua data makanan dari listFoods
+        foodsLoad.addAll(listFoods)
+
         return foodsLoad
     }
-
-
-
 }

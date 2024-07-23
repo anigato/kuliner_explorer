@@ -16,7 +16,10 @@ class FoodsViewHolder(private val binding: ListItemFoodsBinding) : RecyclerView.
      * Mengatur teks judul dan gambar makanan menggunakan Picasso.
      */
     fun bindView(foods: ModelFoods) {
+        // Mengatur teks judul makanan
         binding.txtTitle.text = foods.title
+
+        // Menggunakan Picasso untuk memuat gambar makanan ke dalam imageCard
         Picasso.get().load(foods.image).into(binding.imageCard)
     }
 }

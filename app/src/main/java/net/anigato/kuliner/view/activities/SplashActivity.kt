@@ -24,26 +24,28 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        // Initialize SimpleLocation
+        // Inisialisasi SimpleLocation
         simpleLocation = SimpleLocation(this)
 
-        // Start location updates
+        // Mulai pembaruan lokasi
         simpleLocation.beginUpdates()
 
-        // Check and get location
+        // Periksa dan dapatkan lokasi
         checkLocation()
     }
 
     private fun checkLocation() {
+        // Jika lokasi tidak diaktifkan, buka pengaturan lokasi
         if (!simpleLocation.hasLocationEnabled()) {
             openLocationSettings()
         } else {
+            // Jika lokasi aktif, dapatkan lokasi
             getLocation()
         }
     }
 
     private fun getLocation() {
-        // Check for location every second
+        // Periksa lokasi setiap detik
         Handler(Looper.getMainLooper()).postDelayed({
             if (simpleLocation.latitude != 0.0 && simpleLocation.longitude != 0.0) {
                 strCurrentLatitude = simpleLocation.latitude
@@ -51,10 +53,10 @@ class SplashActivity : AppCompatActivity() {
                 continueWithLocation()
             } else {
                 Log.d("Current Location", "Location not available.")
-                // Retry location check
+                // Coba lagi jika lokasi tidak tersedia
                 getLocation()
             }
-        }, 1000) // Retry every second
+        }, 1000) // Coba lagi setiap detik
     }
 
     private fun openLocationSettings() {
@@ -66,6 +68,7 @@ class SplashActivity : AppCompatActivity() {
         Log.d("Current Location", "Latitude: $strCurrentLatitude")
         Log.d("Current Location", "Longitude: $strCurrentLongitude")
 
+        // Gunakan Geocoder untuk mendapatkan nama kota berdasarkan koordinat
         val geocoder = Geocoder(this, Locale.getDefault())
         try {
             val addressList = geocoder.getFromLocation(strCurrentLatitude, strCurrentLongitude, 1)
@@ -82,6 +85,7 @@ class SplashActivity : AppCompatActivity() {
             strCity = "belum dapat lokasi"
         }
 
+        // Navigasi ke FoodsActivity dengan nama kota sebagai extra
         val intent = Intent(this, FoodsActivity::class.java)
         intent.putExtra("strCity", strCity)
         startActivity(intent)
@@ -90,13 +94,15 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Mulai pembaruan lokasi saat aktivitas dilanjutkan
         simpleLocation.beginUpdates()
-        // Retry location check when resuming
+        // Periksa lokasi kembali saat aktivitas dilanjutkan
         checkLocation()
     }
 
     override fun onPause() {
         super.onPause()
+        // Hentikan pembaruan lokasi saat aktivitas dijeda
         simpleLocation.endUpdates()
     }
 }

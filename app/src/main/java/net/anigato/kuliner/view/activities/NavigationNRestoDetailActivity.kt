@@ -17,7 +17,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.widget.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -39,11 +39,9 @@ import com.akexorcist.googledirection.model.Direction
 import com.akexorcist.googledirection.util.DirectionConverter
 import com.google.android.gms.maps.model.*
 
-// Import semua dependensi yang diperlukan
-
 class NavigationNRestoDetailActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback {
 
-    // Deklarasi variabel lateinit untuk komponen UI, ViewModel, lokasi, dan informasi restoran
+    // Deklarasi variabel untuk komponen UI, ViewModel, lokasi, dan informasi restoran
     private lateinit var binding: ActivityRuteBinding
     private lateinit var mapsView: GoogleMap
     private lateinit var progressDialog: ProgressDialog
@@ -94,10 +92,8 @@ class NavigationNRestoDetailActivity : AppCompatActivity(), OnMapReadyCallback, 
         progressDialog.setMessage("Sedang menampilkan detail rute")
 
         // Setup ActionBar
-        if (supportActionBar != null) {
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowTitleEnabled(false)
-        }
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
 
         // Inisialisasi SimpleLocation untuk mendapatkan lokasi saat ini
         simpleLocation = SimpleLocation(this)
@@ -318,14 +314,14 @@ class NavigationNRestoDetailActivity : AppCompatActivity(), OnMapReadyCallback, 
             mapsView.addMarker(MarkerOptions()
                 .title("Lokasimu")
                 .position(fromLatLng)
-                .icon(resizeMapIcons(R.drawable.ic_loc_user, 96, 96)) // Adjust width and height as needed
+                .icon(resizeMapIcons(R.drawable.ic_loc_user, 96, 96)) // Sesuaikan lebar dan tinggi sesuai kebutuhan
             )
 
             // Tambahkan marker lokasi tujuan (restoran)
             mapsView.addMarker(MarkerOptions()
                 .title(strNamaLokasi)
                 .position(toLatLng)
-                .icon(resizeMapIcons(R.drawable.ic_loc_restaurant, 96, 96)) // Adjust width and height as needed
+                .icon(resizeMapIcons(R.drawable.ic_loc_restaurant, 96, 96)) // Sesuaikan lebar dan tinggi sesuai kebutuhan
             )
 
             // Tampilkan polyline rute dari pengguna ke restoran

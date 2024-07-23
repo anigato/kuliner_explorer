@@ -12,7 +12,6 @@ import net.anigato.kuliner.networking.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**
@@ -65,6 +64,11 @@ class MainViewModel : ViewModel() {
         Log.d("MainViewModel", "Set Marker Location: $strLocation")
     }
 
+    /**
+     * Memproses hasil pencarian restoran.
+     * @param results Daftar hasil pencarian.
+     * @param strLocation Lokasi pencarian.
+     */
     private fun processResults(results: List<ModelResults>, strLocation: String) {
         val items = ArrayList<ModelResults>()
         var checkedCount = 0
@@ -87,11 +91,9 @@ class MainViewModel : ViewModel() {
         }
     }
 
-
-
-
     /**
      * Metode untuk mengambil detail lokasi restoran berdasarkan ID tempat.
+     * @param strPlaceID ID tempat restoran.
      */
     fun setDetailLocation(strPlaceID: String) {
         val apiService = ApiClient.getClient() // Mendapatkan klien retrofit untuk layanan API
@@ -114,7 +116,10 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * Metode untuk mengambil jarak lokasi restoran berdasarkan ID tempat.
+     * Metode untuk memeriksa jarak lokasi restoran berdasarkan ID tempat.
+     * @param strPlaceID ID tempat restoran.
+     * @param strLocation Lokasi pencarian.
+     * @param callback Fungsi callback untuk mengembalikan hasil pemeriksaan.
      */
     fun checkJarak(strPlaceID: String, strLocation: String, callback: (Boolean) -> Unit) {
         val apiService = ApiClient.getClient() // Mendapatkan klien retrofit untuk layanan API
@@ -139,8 +144,6 @@ class MainViewModel : ViewModel() {
             }
         })
     }
-
-
 
     /**
      * Mengambil LiveData untuk hasil pencarian lokasi restoran.

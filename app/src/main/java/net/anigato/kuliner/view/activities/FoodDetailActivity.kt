@@ -32,8 +32,8 @@ class FoodDetailActivity : AppCompatActivity(), ILoadDetailFood {
         strCity = intent.getStringExtra("strCity")
 
         // Logging untuk memeriksa data yang diterima
-        Log.d("cek detailfood", "$urlImage")
-        Log.d("cek detaildetail", "$urlDetail")
+        Log.d("FoodDetailActivity", "URL Image: $urlImage")
+        Log.d("FoodDetailActivity", "URL Detail: $urlDetail")
 
         // Menampilkan judul dan gambar makanan
         binding.txtTitleDetail.text = intent.getStringExtra("TITLE")
@@ -48,10 +48,14 @@ class FoodDetailActivity : AppCompatActivity(), ILoadDetailFood {
         foodDetailController?.setupListeners(strCity)
     }
 
-    // Implementasi dari interface ILoadDetailFood untuk menampilkan detail makanan yang dimuat
+    /**
+     * Implementasi dari interface ILoadDetailFood untuk menampilkan detail makanan yang dimuat.
+     *
+     * @param details Daftar string yang berisi detail makanan.
+     */
     override fun getDetails(details: ArrayList<String>) {
-        for (index in details.indices) {
-            binding.txtDetail.append(details[index])
+        details.forEachIndexed { index, detail ->
+            binding.txtDetail.append(detail)
             if (index < details.size - 1) {
                 binding.txtDetail.append("\n\n")
             }

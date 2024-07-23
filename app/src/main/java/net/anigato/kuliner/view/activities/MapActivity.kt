@@ -41,13 +41,14 @@ import android.graphics.Bitmap
 import android.os.Handler
 import com.google.android.gms.maps.model.BitmapDescriptor
 
-
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapBinding
     private lateinit var toolbarBinding: ToolbarBinding
 
+    // Variabel untuk menyimpan judul dari MainViewModel
     var title = MainViewModel.title
 
+    // Array izin lokasi yang dibutuhkan
     var permissionArrays = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     lateinit var mapsView: GoogleMap
     lateinit var simpleLocation: SimpleLocation
@@ -67,8 +68,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbarBinding = ToolbarBinding.bind(toolbar)
 
+        // Sembunyikan ActionBar
         supportActionBar?.hide()
 
+        // Konfigurasi tampilan status bar dan navigasi bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -80,36 +83,40 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             window.statusBarColor = Color.TRANSPARENT
         }
 
-        val setPermission = Build.VERSION.SDK_INT
-        if (setPermission > Build.VERSION_CODES.LOLLIPOP_MR1) {
-            if (checkIfAlreadyhavePermission() && checkIfAlreadyhavePermission2()) {
-            } else {
+        // Periksa dan minta izin lokasi
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+            if (!checkIfAlreadyhavePermission() || !checkIfAlreadyhavePermission2()) {
                 ActivityCompat.requestPermissions(this, permissionArrays, 101)
             }
         }
 
+        // Inisialisasi ProgressDialog
         progressDialog = ProgressDialog(this)
         progressDialog.setTitle("Mohon Tunggu…")
         progressDialog.setCancelable(false)
         progressDialog.setMessage("Sedang mencari Resto yang menjual $title")
 
+        // Inisialisasi SimpleLocation
         simpleLocation = SimpleLocation(this)
         simpleLocation.beginUpdates()
 
+        // Buka pengaturan jika lokasi tidak diaktifkan
         if (!simpleLocation.hasLocationEnabled()) {
             SimpleLocation.openSettings(this)
         }
 
-        //get location
+        // Dapatkan lokasi saat ini
         strCurrentLatitude = simpleLocation.latitude
         strCurrentLongitude = simpleLocation.longitude
 
-        //set location lat long
+        // Set lokasi saat ini
         strCurrentLocation = "$strCurrentLatitude,$strCurrentLongitude"
 
+        // Inisialisasi peta
         val supportMapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         supportMapFragment.getMapAsync(this)
 
+        // Inisialisasi adapter dan RecyclerView
         mainAdapter = MainAdapter(this)
         binding.rvListLocation.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.rvListLocation.adapter = mainAdapter
@@ -118,11 +125,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onPause() {
         super.onPause()
+        // Hentikan pembaruan lokasi saat aktivitas dijeda
         simpleLocation.endUpdates()
     }
 
     override fun onResume() {
         super.onResume()
+        // Mulai pembaruan lokasi saat aktivitas dilanjutkan
         simpleLocation.beginUpdates()
     }
 
@@ -138,6 +147,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Jika izin ditolak, muat ulang aktivitas
         for (grantResult in grantResults) {
             if (grantResult == PackageManager.PERMISSION_DENIED) {
                 val intent = intent
@@ -151,18 +161,19 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapsView = googleMap
         strCity = intent.getStringExtra("strCity").toString()
 
-        toolbarBinding.tvFoodName.text = title + " disekitarmu"
+        // Set teks toolbar dengan nama makanan dan kota
+        toolbarBinding.tvFoodName.text = "$title disekitarmu"
         try {
-            toolbarBinding.tvCity.text = "Kamu ada di " + strCity
+            toolbarBinding.tvCity.text = "Kamu ada di $strCity"
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
-        //viewmodel
+        // Inisialisasi ViewModel untuk mendapatkan lokasi
         getLocationViewModel()
     }
 
-    //get multiple marker
+    // Mendapatkan marker lokasi dari ViewModel
     private fun getLocationViewModel() {
         Log.d("MapActivity getmarker", "getLocationViewModel()")
         mainViewModel = ViewModelProvider(this, NewInstanceFactory()).get(MainViewModel::class.java)
@@ -194,32 +205,30 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
-
+    // Menambahkan marker pada peta
     private fun getMarker(modelResultsArrayList: ArrayList<ModelResults>) {
         val currentLatLng = LatLng(strCurrentLatitude, strCurrentLongitude)
         mapsView.addMarker(MarkerOptions()
             .position(currentLatLng)
-            .icon(resizeMapIcons(R.drawable.ic_loc_user, 96, 96)) // Adjust width and height as needed
+            .icon(resizeMapIcons(R.drawable.ic_loc_user, 96, 96)) // Sesuaikan lebar dan tinggi sesuai kebutuhan
             .title("Lokasimu"))
 
         for (i in modelResultsArrayList.indices) {
-            //set LatLong from API
+            // Set LatLong dari API
             val latLngMarker = LatLng(modelResultsArrayList[i].modelGeometry.modelLocation.lat,
                 modelResultsArrayList[i].modelGeometry.modelLocation.lng)
 
-//        click marker for change position recyclerview
-
-            //get LatLong to Marker
+            // Tambahkan marker pada peta
             mapsView.addMarker(MarkerOptions()
                 .position(latLngMarker)
-                .icon(resizeMapIcons(R.drawable.ic_loc_restaurant, 96, 96)) // Adjust width and height as needed
+                .icon(resizeMapIcons(R.drawable.ic_loc_restaurant, 96, 96)) // Sesuaikan lebar dan tinggi sesuai kebutuhan
                 .title(modelResultsArrayList[i].name))
 
-            //show Marker
+            // Menampilkan marker
             val latLngResult = LatLng(modelResultsArrayList[0].modelGeometry.modelLocation.lat,
                 modelResultsArrayList[0].modelGeometry.modelLocation.lng)
 
-            //set position marker
+            // Atur posisi marker pada peta
             mapsView.moveCamera(CameraUpdateFactory.newLatLng(latLngResult))
             mapsView.animateCamera(CameraUpdateFactory
                 .newLatLngZoom(LatLng(
@@ -228,7 +237,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             mapsView.uiSettings.setAllGesturesEnabled(true)
             mapsView.uiSettings.isZoomGesturesEnabled = true
         }
-
 
         mapsView.setOnMarkerClickListener { marker ->
             // Periksa title marker
@@ -279,6 +287,4 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false)
         return BitmapDescriptorFactory.fromBitmap(resizedBitmap)
     }
-
-
 }

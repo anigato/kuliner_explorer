@@ -19,8 +19,7 @@ class FoodAdapter(
     var activity: Activity, // Activity yang memanggil adapter ini
     var modelFoods: MutableList<ModelFoods?>, // Daftar model makanan yang akan ditampilkan
     var strCity: String? // Nama kota yang digunakan untuk detail makanan
-) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     // Tipe view untuk item makanan dan loading
     private val VIEW_TYPE_ITEM = 0
@@ -112,9 +111,9 @@ class FoodAdapter(
             val intent = Intent(activity, FoodDetailActivity::class.java)
             // Mengirim data makanan yang dipilih ke FoodDetailActivity
             intent.putExtra("IMAGE", foodsItem!!.image)
-            intent.putExtra("TITLE", foodsItem!!.title)
-            intent.putExtra("ITERASI", foodsItem!!.iterasi)
-            intent.putExtra("DETAIL", foodsItem!!.detail)
+            intent.putExtra("TITLE", foodsItem.title)
+            intent.putExtra("ITERASI", foodsItem.iterasi)
+            intent.putExtra("DETAIL", foodsItem.detail)
             intent.putExtra("strCity", strCity)
             activity.startActivity(intent) // Memulai FoodDetailActivity
         }

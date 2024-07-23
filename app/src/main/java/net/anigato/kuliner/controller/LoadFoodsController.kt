@@ -9,8 +9,6 @@ import kotlinx.coroutines.withContext
 import net.anigato.kuliner.data.model.food.ModelFoods
 import net.anigato.kuliner.view.foodInterface.IJsoupDataFood
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.jsoup.select.Elements
 import java.io.IOException
 
 class LoadFoodsController(
@@ -21,6 +19,7 @@ class LoadFoodsController(
     private lateinit var loadedData: IJsoupDataFood // Interface untuk mengirimkan hasil pemrosesan
 
     init {
+        // Memastikan bahwa activity yang terkait mengimplementasikan interface IJsoupDataFood
         activity?.let {
             if (it is IJsoupDataFood) {
                 loadedData = it
@@ -31,25 +30,27 @@ class LoadFoodsController(
     }
 
     fun startLoading() {
+        // Memulai coroutine di Dispatchers.Main untuk melakukan pemrosesan di latar belakang
         GlobalScope.launch(Dispatchers.Main) {
             try {
+                // Memuat data makanan di thread IO untuk operasi jaringan
                 val foods = withContext(Dispatchers.IO) {
                     loadFoodsFromCity()
                 }
-                loadedData.getWebData(foods) // Mengirimkan hasil data makanan ke interface setelah selesai
+                // Mengirimkan hasil data makanan ke interface setelah selesai
+                loadedData.getWebData(foods)
             } catch (e: IOException) {
-                e.printStackTrace()
-                // Handle error if needed
+                e.printStackTrace() // Menangani kesalahan IO
             }
         }
     }
 
     suspend fun loadFoodsFromCity(): ArrayList<ModelFoods> {
         val modelFoods = ArrayList<ModelFoods>()
-
         Log.d("cek load food", "$strCity")
 
         try {
+            // Memilih URL yang sesuai berdasarkan nilai strCity
             when (strCity) {
                 "Kabupaten Bandung", "Kabupaten Bandung Barat", "Kota Bandung", "Kota Cimahi" -> {
                     webWithImage(false, "https://www.klook.com/id/blog/makanan-khas-bandung/", modelFoods)
@@ -61,66 +62,66 @@ class LoadFoodsController(
                     webWithImage(false, "https://www.detik.com/jabar/kuliner/d-6714903/10-makanan-khas-bogor-rekomendasi-untuk-pecinta-kuliner", modelFoods)
                 }
                 "Kabupaten Ciamis" -> {
-                    webNoImage(false,"https://jabar.inews.id/berita/10-makanan-khas-ciamis-yang-melegenda-mudah-dikenali-dari-bentuk-dan-rasa/all", modelFoods)
+                    webNoImage("https://jabar.inews.id/berita/10-makanan-khas-ciamis-yang-melegenda-mudah-dikenali-dari-bentuk-dan-rasa/all", modelFoods)
                 }
                 "Kabupaten Cianjur" -> {
-                    webNoImage(false, "https://katadata.co.id/lifestyle/varia/658505205afe7/10-makanan-khas-cianjur-yang-lezat-pecinta-kuliner-harus-coba", modelFoods)
+                    webNoImage("https://katadata.co.id/lifestyle/varia/658505205afe7/10-makanan-khas-cianjur-yang-lezat-pecinta-kuliner-harus-coba", modelFoods)
                 }
                 "Kabupaten Cirebon", "Kota Cirebon" -> {
-                    webNoImage(false, "https://www.cnnindonesia.com/gaya-hidup/20231128131811-267-1029985/15-rekomendasi-makanan-khas-cirebon-legendaris", modelFoods)
+                    webNoImage("https://www.cnnindonesia.com/gaya-hidup/20231128131811-267-1029985/15-rekomendasi-makanan-khas-cirebon-legendaris", modelFoods)
                 }
                 "Kabupaten Garut" -> {
-                    webNoImage(false, "https://www.orami.co.id/magazine/makanan-khas-garut?page=all", modelFoods)
+                    webNoImage("https://www.orami.co.id/magazine/makanan-khas-garut?page=all", modelFoods)
                 }
                 "Kabupaten Indramayu" -> {
-                    webNoImage(false, "https://jabar.inews.id/berita/makanan-khas-indramayu-ada-kuliner-untuk-tolak-bala", modelFoods)
+                    webNoImage("https://jabar.inews.id/berita/makanan-khas-indramayu-ada-kuliner-untuk-tolak-bala", modelFoods)
                 }
                 "Kabupaten Karawang" -> {
-                    webNoImage(false, "https://infokost.id/blog/makanan-khas-karawang/137125/", modelFoods)
+                    webNoImage("https://infokost.id/blog/makanan-khas-karawang/137125/", modelFoods)
                 }
                 "Kabupaten Kuningan" -> {
                     webWithImage(false, "https://dewatiket.id/blog/makanan-khas-kuningan/", modelFoods)
                 }
                 "Kabupaten Majalengka" -> {
-                    webNoImage(false, "https://bobobox.com/blog/oleh-oleh-khas-majalengka/", modelFoods)
+                    webNoImage("https://bobobox.com/blog/oleh-oleh-khas-majalengka/", modelFoods)
                 }
                 "Kabupaten Pangandaran" -> {
                     webWithImage(false, "https://jabar.inews.id/berita/10-makanan-khas-pangandaran-lezatnya-bikin-wisatawan-ketagihan/all", modelFoods)
                 }
                 "Kabupaten Subang" -> {
-                    webNoImage(false, "https://jabar.inews.id/berita/15-makanan-khas-subang-nomor-7-diolah-dengan-pasir-panas/all", modelFoods)
+                    webNoImage("https://jabar.inews.id/berita/15-makanan-khas-subang-nomor-7-diolah-dengan-pasir-panas/all", modelFoods)
                 }
                 "Kabupaten Sukabumi", "Kota Sukabumi" -> {
-                    webNoImage(false, "https://www.detik.com/jabar/kuliner/d-6322136/10-makanan-khas-sukabumi-paling-populer", modelFoods)
+                    webNoImage("https://www.detik.com/jabar/kuliner/d-6322136/10-makanan-khas-sukabumi-paling-populer", modelFoods)
                 }
                 "Kabupaten Sumedang" -> {
-                    webNoImage(false, "https://jabar.inews.id/berita/makanan-khas-sumedang-tak-hanya-tahu-goreng-ternyata-banyak-ragam-dan-varian/all", modelFoods)
+                    webNoImage("https://jabar.inews.id/berita/makanan-khas-sumedang-tak-hanya-tahu-goreng-ternyata-banyak-ragam-dan-varian/all", modelFoods)
                 }
                 "Kabupaten Tasikmalaya", "Kota Tasikmalaya" -> {
-                    webNoImage(false, "https://www.orami.co.id/magazine/makanan-khas-tasikmalaya?page=all", modelFoods)
+                    webNoImage("https://www.orami.co.id/magazine/makanan-khas-tasikmalaya?page=all", modelFoods)
                 }
                 "Kota Banjar" -> {
-                    webNoImage(false, "https://www.yummy.co.id/artikel/kuliner/makanan-khas-banjar-yang-enak", modelFoods)
+                    webNoImage("https://www.yummy.co.id/artikel/kuliner/makanan-khas-banjar-yang-enak", modelFoods)
                 }
                 "Kota Depok" -> {
-                    webNoImage(false, "https://infokost.id/blog/makanan-khas-depok-wajib-coba/110758/", modelFoods)
+                    webNoImage("https://infokost.id/blog/makanan-khas-depok-wajib-coba/110758/", modelFoods)
                 }
                 "Kabupaten Purwakarta" -> {
                     webWithImage(false, "https://salsawisata.com/makanan-khas-purwakarta/", modelFoods)
                 }
             }
         } catch (e: IOException) {
-            throw e
+            throw e // Menangani kesalahan IO
         }
 
-        return modelFoods
+        return modelFoods // Mengembalikan hasil pemrosesan makanan
     }
 
-    private suspend fun webNoImage(terstruktur: Boolean, webUrl: String, modelFoods: ArrayList<ModelFoods>) {
-        val url = webUrl
-//        val document = withContext(Dispatchers.IO) { Jsoup.connect(url).get() }
+
+    private suspend fun webNoImage(webUrl: String, modelFoods: ArrayList<ModelFoods>) {
+        // Mengambil dokumen HTML dari URL yang diberikan di thread IO
         val document = withContext(Dispatchers.IO) {
-            Jsoup.connect(url)
+            Jsoup.connect(webUrl)
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
                 .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
                 .header("Accept-Language", "en-US,en;q=0.5")
@@ -130,6 +131,7 @@ class LoadFoodsController(
                 .get()
         }
 
+        // Mapping nama makanan dengan URL gambar untuk setiap kota
         val listFoodImage: Map<String, String> = when (strCity) {
             "Kabupaten Ciamis" -> mapOf(
                 "Galendo" to "https://dispar.ciamiskab.go.id/wp-content/uploads/2023/08/inCollage_20210607_161427906.jpg",
@@ -335,61 +337,60 @@ class LoadFoodsController(
             else -> mapOf()
         }
 
-        if (!terstruktur) {
-
-            val elements = when (strCity) {
-                "Kabupaten Ciamis", "Kabupaten Cianjur", "Kabupaten Garut", "Kabupaten Indramayu", "Kabupaten Karawang", "Kabupaten Subang","Kabupaten Sukabumi", "Kota Sukabumi","Kabupaten Sumedang", "Kabupaten Tasikmalaya", "Kota Tasikmalaya", "Kota Depok" -> document.select("h3:matchesOwn(\\d+\\.)")
-                "Kabupaten Majalengka" -> document.select("h3:has(span:matches(\\d+\\.))")
-                "Kabupaten Cirebon", "Kota Cirebon", "Kota Banjar" -> document.select("h2:matchesOwn(\\d+\\.)")
-                else -> document.select("h2:matchesOwn(\\d+\\.)")
+        // Mengambil elemen berdasarkan kota
+        val elements = when (strCity) {
+            "Kabupaten Ciamis", "Kabupaten Cianjur", "Kabupaten Garut", "Kabupaten Indramayu", "Kabupaten Karawang", "Kabupaten Subang", "Kabupaten Sukabumi", "Kota Sukabumi", "Kabupaten Sumedang", "Kabupaten Tasikmalaya", "Kota Tasikmalaya", "Kota Depok" -> {
+                val h3WithText = document.select("h3:matchesOwn(\\d+\\.)")
+                val h3WithBoldText = document.select("h3 b:matchesOwn(\\d+\\.)")
+                h3WithText.addAll(h3WithBoldText)
+                h3WithText
             }
+            "Kabupaten Majalengka" -> document.select("h3:has(span:matches(\\d+\\.))")
+            "Kabupaten Cirebon", "Kota Cirebon", "Kota Banjar" -> document.select("h2:matchesOwn(\\d+\\.)")
+            else -> document.select("h2:matchesOwn(\\d+\\.)")
+        }
 
-            if (elements.isEmpty()) {
-                Log.d("cek scrap", "No elements found")
-            } else {
-                var currentIndex = 0
-                val size: Int = when(strCity){
-                    "Kota Banjar" -> elements.size-4
-                    else -> elements.size
-                }
+        if (elements.isEmpty()) {
+            Log.d("cek scrap", "No elements found")
+        } else {
+            var currentIndex = 0
+            val size = if (strCity == "Kota Banjar") elements.size - 4 else elements.size
 
-                while (currentIndex < size) {
-                    val regex = Regex("^\\d+\\.\\s*(.*)")
-                    val matchResult = regex.find(elements[currentIndex].text())
-                    val foodName = matchResult?.groupValues?.get(1) ?: ""
+            while (currentIndex < size) {
+                // Menemukan nama makanan dengan regex
+                val regex = Regex("^\\d+\\.\\s*(.*)")
+                val matchResult = regex.find(elements[currentIndex].text())
+                val foodName = matchResult?.groupValues?.get(1) ?: ""
 
-                    val foodNameCamelCase = toCamelCase(foodName)  // Mengubah foodName menjadi camel case
-                    val foodImg = listFoodImage[foodNameCamelCase] ?: ""
+                val foodNameCamelCase = toCamelCase(foodName)  // Mengubah nama makanan menjadi camel case
+                val foodImg = listFoodImage[foodNameCamelCase] ?: ""
 
-                    val foodDetailList = mutableListOf<String>()
+                val foodDetailList = mutableListOf<String>()
 
-                    var currentElement = elements[currentIndex].nextElementSibling()
-                    while (currentElement != null && (currentElement.tagName() != "h2" && currentElement.tagName() != "h3")) {
-                        if ((strCity.equals("Kabupaten Ciamis") || strCity.equals("Kabupaten Cianjur") || strCity.equals("Kabupaten Cirebon") || strCity.equals("Kota Cirebon") || strCity.equals("Kabupaten Garut") || strCity.equals("Kabupaten Indramayu") || strCity.equals("Kabupaten Karawang") || strCity.equals("Kabupaten Majalengka") || strCity.equals("Kabupaten Subang") || strCity.equals("Kabupaten Sukabumi") || strCity.equals("Kota Sukabumi") || strCity.equals("Kabupaten Sumedang") || strCity.equals("Kabupaten Tasikmalaya") || strCity.equals("Kota Tasikmalaya") || strCity.equals("Kota Banjar") || strCity.equals("Kota Depok")) && currentElement.tagName() == "p"
-                        ) {
-                            foodDetailList.add(currentElement.text())
-                        }
-
-                        currentElement = currentElement.nextElementSibling()
+                // Menemukan detail makanan
+                var currentElement = elements[currentIndex].nextElementSibling()
+                while (currentElement != null && (currentElement.tagName() != "h2" && currentElement.tagName() != "h3")) {
+                    if (currentElement.tagName() == "p") {
+                        foodDetailList.add(currentElement.text())
                     }
-
-                    val foodDetail = foodDetailList.joinToString("\n\n")
-
-                    Log.d("cek scrap", "FoodName: $foodNameCamelCase \n Img: $foodImg \n Index: $currentIndex \n Detail: $foodDetail")
-                    modelFoods.add(ModelFoods(foodImg, foodNameCamelCase, foodDetail, currentIndex.toString()))
-
-                    currentIndex++
+                    currentElement = currentElement.nextElementSibling()
                 }
 
+                val foodDetail = foodDetailList.joinToString("\n\n")
+
+                // Menambahkan data makanan ke modelFoods
+                Log.d("cek scrap", "FoodName: $foodNameCamelCase \n Img: $foodImg \n Index: $currentIndex \n Detail: $foodDetail")
+                modelFoods.add(ModelFoods(foodImg, foodNameCamelCase, foodDetail, currentIndex.toString()))
+
+                currentIndex++
             }
         }
     }
 
 
-    private suspend fun webWithImage(terstruktur:Boolean, webUrl: String, modelFoods: ArrayList<ModelFoods>) {
-        val url = webUrl
+    private suspend fun webWithImage(terstruktur: Boolean, webUrl: String, modelFoods: ArrayList<ModelFoods>) {
         val document = withContext(Dispatchers.IO) {
-            Jsoup.connect(url)
+            Jsoup.connect(webUrl)
                 .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
                 .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
                 .header("Accept-Language", "en-US,en;q=0.5")
@@ -399,21 +400,23 @@ class LoadFoodsController(
                 .get()
         }
 
-        if (terstruktur){
+        if (terstruktur) {
+            // Mengambil elemen-elemen dari halaman web yang terstruktur
             val elements = document.select("div.split-page")
-            val size: Int = elements.size
-            for (index: Int in 0 until size) {
-                val foodImg: String = elements.select("img").eq(index).attr("data-src")
+            val size = elements.size
+            for (index in 0 until size) {
+                val foodImg = elements.select("img").eq(index).attr("data-src")
                 val foodSplit = elements.select("h2").eq(index).text().split(" ")
                 val foodName = foodSplit.subList(1, foodSplit.size).joinToString(" ")
-                val foodNameCamelCase = toCamelCase(foodName)  // Mengubah foodName menjadi camel case
+                val foodNameCamelCase = toCamelCase(foodName) // Mengubah foodName menjadi camel case
 
-                val foodDetail: String = elements.select("p").eq(index).text()
+                val foodDetail = elements.select("p").eq(index).text()
 
                 Log.d("cek scrap", "FoodName: $foodNameCamelCase \n Img: $foodImg \n Index: $index \n Detail: $foodDetail")
                 modelFoods.add(ModelFoods(foodImg, foodNameCamelCase, foodDetail, index.toString()))
             }
-        }else{
+        } else {
+            // Mengambil elemen-elemen dari halaman web yang tidak terstruktur
             val elements = when (strCity) {
                 "Kabupaten Kuningan" -> document.select("h3:matchesOwn(\\d+\\.)")
                 "Kabupaten Purwakarta" -> document.select("h3")
@@ -425,58 +428,59 @@ class LoadFoodsController(
                 Log.d("cek scrap", "No elements found")
             } else {
                 var currentIndex = 0
-                val size: Int = when(strCity){
-                    "Kabupaten Purwakarta" -> elements.size-1
-                    else -> elements.size
-                }
+                val size = if (strCity == "Kabupaten Purwakarta") elements.size - 1 else elements.size
 
                 while (currentIndex < size) {
                     val foodSplit = elements[currentIndex].text().split(" ")
-
-                    val foodName = when(strCity){
-                        "Kabupaten Purwakarta" -> foodSplit.subList(0, foodSplit.size).joinToString(" ")
+                    val foodName = when (strCity) {
+                        "Kabupaten Purwakarta" -> foodSplit.joinToString(" ")
                         else -> foodSplit.subList(1, foodSplit.size).joinToString(" ")
                     }
                     var foodImg = ""
 
-                    for (index: Int in 1 until foodSplit.size) {
-                        if (strCity.equals("Kabupaten Bogor") || strCity.equals("Kota Bogor") || strCity.equals("Kabupaten Pangandaran") || strCity.equals("Kabupaten Purwakarta")) {
-                            val imgElement = when (strCity) {
-                                "Kabupaten Purwakarta" -> document.select("img[alt*=${foodSplit[index-1]}]")
-                                else -> document.select("img[alt*=${foodSplit[index]}]")
+                    // Mencari URL gambar makanan berdasarkan alt text
+                    for (index in 1 until foodSplit.size) {
+                        foodImg = when {
+                            strCity in listOf("Kabupaten Bogor", "Kota Bogor", "Kabupaten Pangandaran", "Kabupaten Purwakarta") -> {
+                                val imgElement = when (strCity) {
+                                    "Kabupaten Purwakarta" -> document.select("img[alt*=${foodSplit[index - 1]}]")
+                                    else -> document.select("img[alt*=${foodSplit[index]}]")
+                                }
+                                when {
+                                    imgElement.hasAttr("data-lazy-src") -> imgElement.attr("data-lazy-src")
+                                    else -> imgElement.attr("src")
+                                }
                             }
-                            foodImg = when {
-                                imgElement.hasAttr("data-lazy-src") -> imgElement.attr("data-lazy-src")
-                                else -> imgElement.attr("src")
+                            strCity in listOf("Kabupaten Kuningan", "Kabupaten Bandung", "Kabupaten Bandung Barat", "Kota Bandung", "Kota Cimahi") -> {
+                                document.select("img[alt*=${foodSplit[index]}]").attr("data-src")
                             }
-                        } else if (strCity.equals("Kabupaten Kuningan")|| strCity.equals("Kabupaten Bandung") || strCity.equals("Kabupaten Bandung Barat") || strCity.equals("Kota Bandung") || strCity.equals("Kota Cimahi")) {
-                            foodImg = document.select("img[alt*=${foodSplit[index]}]").attr("data-src")
+                            else -> ""
                         }
                         if (foodImg.isNotEmpty()) break
                     }
 
-                    if ((strCity.equals("Kabupaten Bogor") || strCity.equals("Kota Bogor") ) && foodName.contains("Dodongkal")) {
+                    // Penanganan khusus untuk beberapa makanan
+                    if (strCity in listOf("Kabupaten Bogor", "Kota Bogor") && foodName.contains("Dodongkal")) {
                         foodImg = document.select("img[alt*=dongkal]").attr("src")
                     }
-
-                    if (strCity.equals("Kabupaten Purwakarta") && foodName.contains("Simping")) {
-                        foodImg = document.select("img[alt*=simping purwakarta]").attr("data-lazy-src")
-                    }else if (strCity.equals("Kabupaten Purwakarta") && foodName.contains("Colenak")) {
-                        foodImg = document.select("img[alt*=Colenak]").attr("data-lazy-src")
-                    }else if (strCity.equals("Kabupaten Purwakarta") && foodName.contains("Sate Maranggi")) {
-                        foodImg = "https://awsimages.detik.net.id/community/media/visual/2020/03/06/4944d259-0db3-4c09-b23b-cea7142586d7_169.jpeg?w=1200"
+                    if (strCity == "Kabupaten Purwakarta") {
+                        when {
+                            foodName.contains("Simping") -> foodImg = document.select("img[alt*=simping purwakarta]").attr("data-lazy-src")
+                            foodName.contains("Colenak") -> foodImg = document.select("img[alt*=Colenak]").attr("data-lazy-src")
+                            foodName.contains("Sate Maranggi") -> foodImg = "https://awsimages.detik.net.id/community/media/visual/2020/03/06/4944d259-0db3-4c09-b23b-cea7142586d7_169.jpeg?w=1200"
+                        }
                     }
 
                     val foodDetailList = mutableListOf<String>()
 
+                    // Mengambil detail makanan berdasarkan tag elemen
                     var currentElement = elements[currentIndex].nextElementSibling()
-
                     while (currentElement != null && (currentElement.tagName() != "h2" && currentElement.tagName() != "h3")) {
-                        if (strCity.equals("Kabupaten Bogor") || strCity.equals("Kota Bogor") || strCity.equals("Kabupaten Kuningan") || strCity.equals("Kabupaten Purwakarta")) {
+                        if (strCity in listOf("Kabupaten Bogor", "Kota Bogor", "Kabupaten Kuningan", "Kabupaten Purwakarta")) {
                             if (currentElement.tagName() == "p") {
                                 foodDetailList.add(currentElement.text())
                             }
-                        } else if(strCity.equals("Kabupaten Bandung") || strCity.equals("Kabupaten Bandung Barat") || strCity.equals("Kota Bandung") || strCity.equals("Kota Cimahi")) {
+                        } else if (strCity in listOf("Kabupaten Bandung", "Kabupaten Bandung Barat", "Kota Bandung", "Kota Cimahi")) {
                             if (currentElement.hasClass("p-txt")) {
                                 foodDetailList.add(currentElement.text())
                             }
@@ -484,7 +488,8 @@ class LoadFoodsController(
                         currentElement = currentElement.nextElementSibling()
                     }
 
-                    if (strCity.equals("Kabupaten Pangandaran")) {
+                    // Penanganan khusus untuk Kabupaten Pangandaran
+                    if (strCity == "Kabupaten Pangandaran") {
                         currentElement = elements[currentIndex].nextElementSibling()
                         while (currentElement != null && (currentElement.tagName() != "p" || currentElement.select("strong").isNotEmpty())) {
                             currentElement = currentElement.nextElementSibling()
@@ -494,8 +499,6 @@ class LoadFoodsController(
                             currentElement = currentElement.nextElementSibling()
                         }
                     }
-
-
 
                     val foodDetail = foodDetailList.joinToString("\n\n")
 
@@ -509,96 +512,10 @@ class LoadFoodsController(
     }
 
 
+    // Fungsi untuk mengubah string menjadi camel case
     fun toCamelCase(input: String): String {
         return input.split(" ").map { word -> word.capitalize() }.joinToString(" ")
     }
 
-//    private suspend fun webTerstruktur(webUrl: String, modelFoods: ArrayList<ModelFoods>) {
-//        val url = webUrl
-//        val doc: Document = withContext(Dispatchers.IO) { Jsoup.connect(url).get() }
-//
-//        val elements: Elements = doc.select("div.split-page")
-//
-//        val size: Int = elements.size
-//        for (index: Int in 0 until size) {
-//            val foodImg: String = elements.select("img").eq(index).attr("data-src")
-//            val foodSplit = elements.select("h2").eq(index).text().split(" ")
-//            val foodName = foodSplit.subList(1, foodSplit.size).joinToString(" ")
-//
-//            val foodDetail: String = elements.select("p").eq(index).text()
-//
-//            Log.d("cek scrap", "FoodName: $foodName \n Img: $foodImg \n Index: $index \n Detail: $foodDetail")
-//            modelFoods.add(ModelFoods(foodImg, foodName, foodDetail, index.toString()))
-//        }
-//    }
-//
-//    private suspend fun webTidakTerstruktur(webUrl: String, modelFoods: ArrayList<ModelFoods>) {
-//        var url = webUrl
-//        val document = withContext(Dispatchers.IO) { Jsoup.connect(url).get() }
-//        val elements = document.select("h2:matchesOwn(\\d+\\.)")
-//
-//        val size: Int = elements.size
-//        if (elements.isEmpty()) {
-//            Log.d("cek scrap", "No elements found")
-//        } else {
-//            var currentIndex = 0
-//            val size: Int = elements.size
-//
-//            while (currentIndex < size) {
-//                val foodSplit = elements[currentIndex].text().split(" ")
-//                val foodName = foodSplit.subList(1, foodSplit.size).joinToString(" ")
-//
-//                var foodImg = ""
-//
-//                for (index: Int in 1 until foodSplit.size) {
-//                    if (strCity.equals("Kabupaten Bogor") ||
-//                        strCity.equals("Kota Bogor")
-//                    ) {
-//                        foodImg = document.select("img[alt*=${foodSplit[index]}]").attr("src")
-//                    } else {
-//                        foodImg = document.select("img[alt*=${foodSplit[index]}]").attr("data-src")
-//                    }
-//
-//                    if (foodImg.isNotEmpty()) break
-//                }
-//
-//                if ((strCity.equals("Kabupaten Bogor") ||
-//                            strCity.equals("Kota Bogor")
-//                            ) &&
-//                    foodName.contains("Dodongkal")
-//                ) {
-//                    foodImg = document.select("img[alt*=dongkal]").attr("src")
-//                }
-//
-//                val foodDetailList = mutableListOf<String>()
-//
-//                var currentElement = elements[currentIndex].nextElementSibling()
-//
-//                while (currentElement != null && currentElement.tagName() != "h2") {
-//                    if (strCity.equals("Kabupaten Bogor") ||
-//                        strCity.equals("Kota Bogor")
-//                    ) {
-//                        if (currentElement.hasClass("p-txt")) {
-//                        } else if (currentElement.tagName() == "p") {
-//                            foodDetailList.add(currentElement.text())
-//                        }
-//                    } else {
-//                        if (currentElement.hasClass("p-txt")) {
-//                            foodDetailList.add(currentElement.text())
-//                        }
-//                    }
-//
-//                    currentElement = currentElement.nextElementSibling()
-//                }
-//
-//                val foodDetail = foodDetailList.joinToString("\n\n")
-//
-//                Log.d("cek scrap", "FoodName: $foodName \n Img: $foodImg \n Index: $currentIndex \n Detail: $foodDetail")
-//                modelFoods.add(ModelFoods(foodImg, foodName, foodDetail, currentIndex.toString()))
-//
-//                currentIndex++
-//            }
-//        }
-//    }
 
 }

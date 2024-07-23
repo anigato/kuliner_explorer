@@ -8,19 +8,19 @@ import java.io.Serializable
  * Model untuk detail objek kuliner.
  * Berisi informasi geometri, jam buka, nama, nomor telepon, dan rating.
  */
-class ModelResto : Serializable {
+data class ModelResto(
     @SerializedName("geometry")
-    lateinit var modelGeometry: ModelGeometry // Informasi geometri objek
+    val modelGeometry: ModelGeometry, // Informasi geometri objek
 
     @SerializedName("opening_hours")
-    lateinit var modelOperationalResto: ModelOperationalResto // Informasi jam buka objek
+    val modelOperationalResto: ModelOperationalResto, // Informasi jam buka objek
 
     @SerializedName("name")
-    lateinit var name: String // Nama objek kuliner
+    val name: String, // Nama objek kuliner
 
     @SerializedName("formatted_phone_number")
-    var formatted_phone_number = "0" // Nomor telepon, default "0" jika tidak tersedia
+    val formatted_phone_number: String = "0", // Nomor telepon, default "0" jika tidak tersedia
 
     @SerializedName("rating")
-    var rating = 0.0 // Rating objek, default 0.0 jika tidak tersedia
-}
+    val rating: Double = 0.0 // Rating objek, default 0.0 jika tidak tersedia
+) : Serializable

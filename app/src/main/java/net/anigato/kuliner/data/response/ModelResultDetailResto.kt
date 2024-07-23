@@ -13,5 +13,5 @@ class ModelResultDetailResto {
     lateinit var modelResto: ModelResto // Objek ModelResto yang berisi detail dari objek kuliner
 
     @SerializedName("routes")
-    var routes: List<Route>? = null // Daftar rute yang berisi informasi jarak
+    var routes: List<Route>? = null // Daftar rute yang berisi informasi jarak, bisa null jika tidak tersedia
 }

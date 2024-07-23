@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.Dispatchers
@@ -101,17 +100,21 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
 
         binding.spinnerKota.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                // Set warna teks item yang dipilih menjadi putih
                 (parent.getChildAt(0) as TextView).setTextColor(0xFFFFFFFF.toInt())
                 val strCityDropdown = parent.getItemAtPosition(position).toString()
                 if (position != 0) {
+                    // Tampilkan daftar kuliner khas berdasarkan kota yang dipilih
                     binding.infoKuliner.text = "Daftar Kuliner Khas $strCityDropdown"
                     loadFoods(strCityDropdown)
                 } else {
+                    // Tampilkan info lokasi saat ini jika tidak ada kota yang dipilih
                     binding.infoKuliner.text = "${checkLocation(strCity)}"
                 }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
+                // Tampilkan info lokasi saat ini jika tidak ada kota yang dipilih
                 binding.infoKuliner.text = "${checkLocation(strCity)}"
             }
         }
@@ -119,6 +122,7 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
 
     private fun setupResetButton() {
         binding.buttonReset.setOnClickListener {
+            // Reset ke kota saat ini dan atur tampilan awal
             strCity = currentCity
             binding.spinnerKota.setSelection(0)
             binding.infoKuliner.text = "${checkLocation(currentCity)}"
@@ -130,23 +134,27 @@ class FoodsActivity : AppCompatActivity(), IJsoupDataFood {
         GlobalScope.launch(Dispatchers.Main) {
             try {
                 val foods = withContext(Dispatchers.IO) {
+                    // Load data makanan dari kota yang dipilih
                     val loadFoodsController = LoadFoodsController(this@FoodsActivity, city)
                     loadFoodsController.loadFoodsFromCity()
                 }
+                // Tampilkan data makanan yang berhasil di-load
                 getWebData(foods)
             } catch (e: IOException) {
                 e.printStackTrace()
-                // Handle error if needed
+                // Handle error jika terjadi kesalahan saat load data
             }
         }
     }
 
     override fun getWebData(datas: ArrayList<ModelFoods>) {
         modelFoods = datas
+        // Setup tampilan dan data dengan controller
         foodsController.setupViewAndData(datas, strCity)
     }
 
     private fun checkLocation(city: String?): String {
+        // Cek apakah kota ada dalam daftar kota dan tampilkan pesan sesuai
         return if (city != null && kotaArray.contains(city)) {
             "Daftar Kuliner Khas ${city}"
         } else {
