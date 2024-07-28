@@ -21,13 +21,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.NewInstanceFactory
 import com.akexorcist.googledirection.DirectionCallback
 import com.akexorcist.googledirection.GoogleDirection
 import com.akexorcist.googledirection.constant.TransportMode
 import net.anigato.kuliner.R
-import net.anigato.kuliner.viewmodel.MainViewModel
+import net.anigato.kuliner.controller.MapsController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -41,17 +39,17 @@ import com.google.android.gms.maps.model.*
 
 class NavigationNRestoDetailActivity : AppCompatActivity(), OnMapReadyCallback, DirectionCallback {
 
-    // Deklarasi variabel untuk komponen UI, ViewModel, lokasi, dan informasi restoran
+    // Deklarasi variabel untuk komponen UI, Controller, lokasi, dan informasi restoran
     private lateinit var binding: ActivityRuteBinding
     private lateinit var mapsView: GoogleMap
     private lateinit var progressDialog: ProgressDialog
-    private lateinit var mainViewModel: MainViewModel
+    private lateinit var mapsController: MapsController
     private lateinit var simpleLocation: SimpleLocation
     private lateinit var strPlaceId: String
     private lateinit var strNamaLokasi: String
     private lateinit var strNamaJalan: String
     private lateinit var strRating: String
-    private lateinit var strPhone: String
+    private var strPhone: String = "0"
     private lateinit var fromLatLng: LatLng
     private lateinit var toLatLng: LatLng
     private lateinit var strCurrentLocation: String
@@ -119,20 +117,30 @@ class NavigationNRestoDetailActivity : AppCompatActivity(), OnMapReadyCallback, 
             fromLatLng = LatLng(strCurrentLatitude, strCurrentLongitude)
             toLatLng = LatLng(strLatitude, strLongitude)
 
-            // Setup ViewModel untuk detail lokasi
-            mainViewModel = ViewModelProvider(this, NewInstanceFactory()).get(MainViewModel::class.java)
-            mainViewModel.setDetailLocation(strPlaceId)
-            progressDialog.show()
+            // Inisialisasi MapsController
+            mapsController = MapsController()
 
-            // Observasi data dari ViewModel untuk detail restoran
-            mainViewModel.getDetailLocation().observe(this, { modelResto ->
+            // Mendapatkan detail lokasi dari Controller
+            getDetailLocationFromController()
+            progressDialog.show()
+        }
+
+        // Setup fragment Google Maps
+        val supportMapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        supportMapFragment.getMapAsync(this)
+    }
+
+    // Method untuk mendapatkan detail lokasi dari Controller
+    private fun getDetailLocationFromController() {
+        mapsController.setDetailLocation(strPlaceId, object : MapsController.OnDetailLocationResult {
+            override fun onSuccess(modelResto: net.anigato.kuliner.data.model.resto.ModelResto) {
                 // Ambil detail dari model restoran
                 strNamaLokasi = modelResto.name
                 strPhone = modelResto.formatted_phone_number
                 strRating = modelResto.rating.toString()
 
                 // Sembunyikan tampilan nomor telepon jika tidak tersedia
-                if (strPhone == "0") {
+                if (strPhone == "0" || strPhone.isNullOrEmpty()) {
                     binding.llPhone.visibility = View.GONE
                 } else {
                     strPhone = modelResto.formatted_phone_number
@@ -218,12 +226,17 @@ class NavigationNRestoDetailActivity : AppCompatActivity(), OnMapReadyCallback, 
                 }
 
                 progressDialog.dismiss() // Tutup ProgressDialog setelah selesai memuat data
-            })
-        }
+            }
 
-        // Setup fragment Google Maps
-        val supportMapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
-        supportMapFragment.getMapAsync(this)
+            override fun onFailure() {
+                Toast.makeText(
+                    this@NavigationNRestoDetailActivity,
+                    "Gagal mendapatkan data detail lokasi.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                progressDialog.dismiss()
+            }
+        })
     }
 
     // Method untuk mengatur mode transportasi (mobil atau berjalan kaki)
@@ -277,13 +290,6 @@ class NavigationNRestoDetailActivity : AppCompatActivity(), OnMapReadyCallback, 
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return
         }
         mapsView.isMyLocationEnabled = true
@@ -363,5 +369,4 @@ class NavigationNRestoDetailActivity : AppCompatActivity(), OnMapReadyCallback, 
         val resizedBitmap = Bitmap.createScaledBitmap(imageBitmap, width, height, false)
         return BitmapDescriptorFactory.fromBitmap(resizedBitmap)
     }
-
 }

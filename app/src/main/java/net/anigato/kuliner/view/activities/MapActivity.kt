@@ -16,13 +16,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.NewInstanceFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import net.anigato.kuliner.R
 import net.anigato.kuliner.data.model.restoLocation.ModelResults
 import net.anigato.kuliner.view.adapter.MainAdapter
-import net.anigato.kuliner.viewmodel.MainViewModel
+import net.anigato.kuliner.controller.MapsController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -45,15 +43,15 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapBinding
     private lateinit var toolbarBinding: ToolbarBinding
 
-    // Variabel untuk menyimpan judul dari MainViewModel
-    var title = MainViewModel.title
+    // Variabel untuk menyimpan judul dari MapsController
+    var title = MapsController.title
 
     // Array izin lokasi yang dibutuhkan
     var permissionArrays = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
     lateinit var mapsView: GoogleMap
     lateinit var simpleLocation: SimpleLocation
     lateinit var progressDialog: ProgressDialog
-    lateinit var mainViewModel: MainViewModel
+    lateinit var mapsController: MapsController
     lateinit var mainAdapter: MainAdapter
     lateinit var strCurrentLocation: String
     var strCurrentLatitude = 0.0
@@ -121,6 +119,9 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         binding.rvListLocation.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.rvListLocation.adapter = mainAdapter
         binding.rvListLocation.setHasFixedSize(true)
+
+        // Inisialisasi MapsController
+        mapsController = MapsController()
     }
 
     override fun onPause() {
@@ -169,40 +170,48 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             e.printStackTrace()
         }
 
-        // Inisialisasi ViewModel untuk mendapatkan lokasi
-        getLocationViewModel()
+        // Mendapatkan lokasi dari Controller
+        getLocationFromController()
     }
 
-    // Mendapatkan marker lokasi dari ViewModel
-    private fun getLocationViewModel() {
-        Log.d("MapActivity getmarker", "getLocationViewModel()")
-        mainViewModel = ViewModelProvider(this, NewInstanceFactory()).get(MainViewModel::class.java)
-        mainViewModel.setMarkerLocation(strCurrentLocation)
-        progressDialog.show()
+    // Mendapatkan marker lokasi dari Controller
+    private fun getLocationFromController() {
+        Log.d("MapActivity getmarker", "getLocationFromController()")
+        mapsController.setMarkerLocation(strCurrentLocation, object : MapsController.OnMarkerLocationResult {
+            override fun onSuccess(results: ArrayList<ModelResults>) {
+                Log.d("MapActivity getmarker", "Data dari Controller, jumlah item: ${results.size}")
+                if (results.isNotEmpty()) {
+                    mainAdapter.setLocationAdapter(results)
+                    getMarker(results)
+                    progressDialog.dismiss()
+                } else {
+                    Toast.makeText(
+                        this@MapActivity,
+                        "Maaf, tidak ada restoran yang menjual $title di sekitar Anda",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-        mainViewModel.getMarkerLocation().observe(this, { modelResults: ArrayList<ModelResults> ->
-            Log.d("MapActivity getmarker", "Data dari ViewModel, jumlah item: ${modelResults.size}")
-            if (modelResults.isNotEmpty()) {
-                mainAdapter.setLocationAdapter(modelResults)
-                getMarker(modelResults)
-                progressDialog.dismiss()
-            } else {
+                    // Menutup progressDialog secara otomatis dan berpindah ke FoodsActivity
+                    Handler().postDelayed({
+                        progressDialog.dismiss()
+                        // Langsung navigasi ke FoodsActivity
+                        val intent = Intent(this@MapActivity, FoodsActivity::class.java)
+                        intent.putExtra("strCity", strCity)
+                        startActivity(intent)
+                    }, 2000) // Waktu tunggu 2 detik sebelum pindah ke FoodsActivity
+                }
+            }
+
+            override fun onFailure() {
                 Toast.makeText(
-                    this,
-                    "Maaf, tidak ada restoran yang menjual $title di sekitar Anda",
+                    this@MapActivity,
+                    "Gagal mendapatkan data lokasi.",
                     Toast.LENGTH_SHORT
                 ).show()
-
-                // Menutup progressDialog secara otomatis dan berpindah ke FoodsActivity
-                Handler().postDelayed({
-                    progressDialog.dismiss()
-                    // Langsung navigasi ke FoodsActivity
-                    val intent = Intent(this, FoodsActivity::class.java)
-                    intent.putExtra("strCity", strCity)
-                    startActivity(intent)
-                }, 2000) // Waktu tunggu 2 detik sebelum pindah ke FoodsActivity
+                progressDialog.dismiss()
             }
         })
+        progressDialog.show()
     }
 
     // Menambahkan marker pada peta
@@ -240,7 +249,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mapsView.setOnMarkerClickListener { marker ->
             // Periksa title marker
-            if (marker.title != "Current Location") {
+            if (marker.title != "Lokasimu") {
                 val markerPosition = marker.position
                 // Tambahkan logika untuk marker yang dapat diklik di sini
                 var markerSelected = -1
@@ -256,8 +265,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 binding.rvListLocation.smoothScrollToPosition(markerSelected)
                 marker.showInfoWindow()
             }
-            // Kembalikan true untuk mengizinkan tindakan klik pada marker selain "Current Location"
-            marker.title != "Current Location"
+            // Kembalikan true untuk mengizinkan tindakan klik pada marker selain "Lokasimu"
+            marker.title != "Lokasimu"
         }
     }
 
@@ -278,7 +287,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQ_PERMISSION && resultCode == RESULT_OK) {
-            getLocationViewModel()
+            getLocationFromController()
         }
     }
 

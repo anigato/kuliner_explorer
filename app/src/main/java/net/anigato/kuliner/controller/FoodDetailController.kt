@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import net.anigato.kuliner.databinding.ActivityDetailsFoodBinding
 import net.anigato.kuliner.view.activities.MapActivity
-import net.anigato.kuliner.viewmodel.MainViewModel
 
 class FoodDetailController(
     private val context: Context,
@@ -14,8 +13,8 @@ class FoodDetailController(
 
     // Fungsi untuk mengatur listener pada tombol dan menginisialisasi data yang diperlukan
     fun setupListeners(strCity: String?) {
-        // Mengambil judul dari intent dan menyimpannya di MainViewModel
-        MainViewModel.title = (context as AppCompatActivity).intent.getStringExtra("TITLE")
+        // Mengambil judul dari intent dan menyimpannya di MapsController
+        MapsController.title = (context as AppCompatActivity).intent.getStringExtra("TITLE")
 
         // Menambahkan listener untuk tombol "Go to Map"
         binding.btnGoToMap.setOnClickListener {
@@ -27,4 +26,3 @@ class FoodDetailController(
         }
     }
 }
-
